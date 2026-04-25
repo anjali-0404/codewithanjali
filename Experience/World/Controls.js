@@ -246,7 +246,7 @@ export default class Controls {
             invalidateOnRefresh: true,
           },
         }).to(this.threejsElement.element.scale, {
-          x: 0.6, y: 0.6, z: 0.6,
+          x: 0.4, y: 0.4, z: 0.4,
         });
 
         this.secondMoveTimeline = new GSAP.timeline({
@@ -258,7 +258,7 @@ export default class Controls {
             invalidateOnRefresh: true,
           },
         }).to(this.threejsElement.element.scale, {
-          x: 1, y: 1, z: 1,
+          x: 0.4, y: 0.4, z: 0.4,
         }).to(this.threejsElement.element.position, {
           x: 1.5,
         }, "same");
