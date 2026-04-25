@@ -744,48 +744,121 @@ a {
 /* -------------- Media Query -------------- */
 
 @media (max-width: 968px) {
-  .section {
-    width: 100%;
+  .page {
+    background-color: var(--color-background) !important; /* Force solid 2D background */
+    overflow-x: hidden;
   }
 
-  .hero-main {
-    bottom: 124px;
+  .experience {
+    opacity: 0.3 !important; /* Even more faded on mobile */
+    pointer-events: none !important; /* Disable all 3D interactions on mobile */
+  }
+
+  /* Force all animated text to be visible on mobile if it gets stuck */
+  .animate {
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+  }
+
+  .hero {
+    background-color: var(--color-background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    height: auto;
+    min-height: 100vh;
   }
 
   .hero-wrapper {
-    width: 90%;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .hero-main {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    margin-top: 20px;
+  }
+
+  .hero-second {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-top: 10px;
   }
 
   .hero-main-title {
-    font-size: calc(100% + 2vw);
+    font-size: 2.5rem !important; /* Slightly smaller for mobile */
+    line-height: 1.2;
+    margin-bottom: 10px;
   }
 
   .hero-main-description {
-    font-size: calc(80% + 1.5vw);
-    line-height: 1.4;
-    word-break: break-word;
+    font-size: 1.1rem !important;
+    margin-top: 5px;
+    opacity: 1 !important;
   }
 
   .section {
-    width: 100%;
-    padding: 100px 5%; /* Much more reasonable padding on mobile */
+    width: 94% !important;
+    margin: 60px auto !important;
+    padding: 40px 20px !important;
+    background-color: var(--color-background) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-left: 6px solid var(--color-secondary) !important;
+    position: relative !important;
+    z-index: 100 !important;
   }
 
-  .progress-bar-wrapper-left {
-    right: 0;
-    left: auto;
+  .section-detail-wrapper, .section-intro-wrapper {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+
+  .section-margin {
+    height: 80px !important; /* Much smaller margins on mobile */
   }
 
   .intro-text {
-    font-size: 16px;
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none !important;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    width: 100%;
+    text-align: center;
   }
 
-  button {
-    margin-top: 32px;
+  .arrow-wrapper {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none !important;
+    margin-top: 20px;
   }
 
-  .bot-button {
-    margin-top: 16px;
+  .section-title-text {
+    font-size: 24px !important;
+    transform: none !important;
+  }
+
+  .section-title-decoration {
+    display: none !important; /* Simplify decoration on mobile */
   }
 }
 

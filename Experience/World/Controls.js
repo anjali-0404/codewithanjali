@@ -228,7 +228,7 @@ export default class Controls {
       // Mobile
       "(max-width: 968px)": () => {
         if (this.threejsElement && this.threejsElement.element) {
-            this.threejsElement.element.scale.set(0.6, 0.6, 0.6);
+            this.threejsElement.element.scale.set(0.4, 0.4, 0.4);
         }
 
         // Section Animations for Mobile (Ensuring visibility on setup)
@@ -246,7 +246,7 @@ export default class Controls {
             invalidateOnRefresh: true,
           },
         }).to(this.threejsElement.element.scale, {
-          x: 1, y: 1, z: 1,
+          x: 0.6, y: 0.6, z: 0.6,
         });
 
         this.secondMoveTimeline = new GSAP.timeline({
@@ -258,7 +258,7 @@ export default class Controls {
             invalidateOnRefresh: true,
           },
         }).to(this.threejsElement.element.scale, {
-          x: 2, y: 2, z: 2,
+          x: 1, y: 1, z: 1,
         }).to(this.threejsElement.element.position, {
           x: 1.5,
         }, "same");

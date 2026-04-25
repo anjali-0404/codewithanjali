@@ -70,9 +70,9 @@ export default class Preloader extends EventEmitter {
       } else {
         this.timeline
           .to(this.threejsElement.scale, {
-            x: 0.6,
-            y: 0.6,
-            z: 0.6,
+            x: 0.4,
+            y: 0.4,
+            z: 0.4,
             ease: "back.out(2.5)",
             duration: 1,
           })
@@ -182,9 +182,9 @@ export default class Preloader extends EventEmitter {
         .to(
           this.threejsElement.scale,
           {
-            x: this.device === "desktop" ? 1 : 0.6,
-            y: this.device === "desktop" ? 1 : 0.6,
-            z: this.device === "desktop" ? 1 : 0.6,
+            x: this.device === "desktop" ? 1 : 0.4,
+            y: this.device === "desktop" ? 1 : 0.4,
+            z: this.device === "desktop" ? 1 : 0.4,
             ease: "back.out(2.5)",
             onComplete: resolve
           },
@@ -240,7 +240,7 @@ export default class Preloader extends EventEmitter {
     if (this.device === "desktop") {
       this.threejsElement.scale.set(1, 1, 1);
     } else {
-      this.threejsElement.scale.set(0.6, 0.6, 0.6);
+      this.threejsElement.scale.set(0.4, 0.4, 0.4);
     }
   }
 
