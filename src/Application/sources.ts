@@ -1,11 +1,10 @@
 /**
  * sources.ts — Anjali Tripathi Portfolio
  *
- * Only audio + monitor overlay textures are loaded now.
- * The 3D scene geometry is built procedurally in GameRoom.ts.
+ * Audio, monitor overlay textures, and 3D Robot Companion model.
  */
 const sources: Resource[] = [
-    // ── Monitor screen overlays ──────────────────────────────────────────
+    // ── Monitor screen overlays ──────────────────────────────────────
     {
         name: 'monitorSmudgeTexture',
         type: 'texture',
@@ -17,7 +16,7 @@ const sources: Resource[] = [
         path: 'textures/monitor/layers/compressed/shadow-compressed.png',
     },
 
-    // ── Mouse sounds ─────────────────────────────────────────────────────
+    // ── Mouse sounds ──────────────────────────────────────────────────
     {
         name: 'mouseDown',
         type: 'audio',
@@ -29,7 +28,7 @@ const sources: Resource[] = [
         path: 'audio/mouse/mouse_up.mp3',
     },
 
-    // ── Keyboard sounds ───────────────────────────────────────────────────
+    // ── Keyboard sounds ──────────────────────────────────────────────
     {
         name: 'keyboardKeydown1',
         type: 'audio',
@@ -61,7 +60,7 @@ const sources: Resource[] = [
         path: 'audio/keyboard/key_6.mp3',
     },
 
-    // ── Startup / atmosphere ─────────────────────────────────────────────
+    // ── Startup / atmosphere ──────────────────────────────────────────
     {
         name: 'startup',
         type: 'audio',
@@ -76,6 +75,23 @@ const sources: Resource[] = [
         name: 'ccType',
         type: 'audio',
         path: 'audio/cc/type.mp3',
+    },
+
+    // ── 3D Robot Companion Model & Textures ──────────────────────────
+    {
+        name: 'robotModel',
+        type: 'objModel',
+        path: 'models/Robot/Robot.obj',
+    },
+    {
+        name: 'robotTexture',
+        type: 'texture',
+        path: 'models/Robot/Robot.png',
+    },
+    {
+        name: 'batteryTexture',
+        type: 'texture',
+        path: 'models/Robot/battary.png',
     },
 ];
 

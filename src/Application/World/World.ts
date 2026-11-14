@@ -4,6 +4,7 @@ import MonitorScreen from './MonitorScreen';
 import GameRoom from './GameRoom';
 import CoffeeSteam from './CoffeeSteam';
 import AudioManager from '../Audio/AudioManager';
+import RobotCompanion from './RobotCompanion';
 
 export default class World {
     application: Application;
@@ -15,25 +16,27 @@ export default class World {
     monitorScreen: MonitorScreen;
     coffeeSteam: CoffeeSteam;
     audioManager: AudioManager;
+    robotCompanion: RobotCompanion;
 
     constructor() {
         this.application = new Application();
         this.scene = this.application.scene;
         this.resources = this.application.resources;
 
-        // Resources needed only for audio / monitor textures now
         this.resources.on('ready', () => {
-            this.gameRoom     = new GameRoom();
-            this.monitorScreen = new MonitorScreen();
-            this.coffeeSteam  = new CoffeeSteam();
-            this.audioManager = new AudioManager();
+            this.gameRoom       = new GameRoom();
+            this.monitorScreen   = new MonitorScreen();
+            this.coffeeSteam    = new CoffeeSteam();
+            this.audioManager   = new AudioManager();
+            this.robotCompanion = new RobotCompanion();
         });
     }
 
     update() {
-        if (this.gameRoom)      this.gameRoom.update();
-        if (this.monitorScreen) this.monitorScreen.update();
-        if (this.coffeeSteam)   this.coffeeSteam.update();
-        if (this.audioManager)  this.audioManager.update();
+        if (this.gameRoom)       this.gameRoom.update();
+        if (this.monitorScreen)  this.monitorScreen.update();
+        if (this.coffeeSteam)    this.coffeeSteam.update();
+        if (this.audioManager)   this.audioManager.update();
+        if (this.robotCompanion) this.robotCompanion.update();
     }
 }

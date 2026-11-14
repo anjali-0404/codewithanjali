@@ -36,15 +36,9 @@ module.exports = {
                 use: ['html-loader'],
             },
             {
-                test: /\.ts?$/,
+                test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/,
-            },
-            // JS
-            {
-                test: /\.tsx$/,
-                exclude: /node_modules/,
-                use: ['babel-loader'],
             },
 
             // CSS

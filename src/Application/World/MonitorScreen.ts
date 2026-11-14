@@ -95,48 +95,55 @@ h1 span{color:var(--c);text-shadow:0 0 30px rgba(0,245,255,.5)}
 .bp2{color:#fff;background:rgba(191,0,255,.2);border-color:rgba(191,0,255,.5)}
 .bp2:hover{background:rgba(191,0,255,.4);box-shadow:0 0 20px rgba(191,0,255,.4);transform:translateY(-1px)}
 
+/* ROBOT CALLOUT */
+.robot-callout{
+  margin-top:28px;background:linear-gradient(135deg,rgba(0,245,255,.08),rgba(191,0,255,.08));
+  border:1px solid rgba(0,245,255,.3);border-radius:8px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.rc-left{display:flex;align-items:center;gap:12px}
+.rc-icon{font-size:24px}
+.rc-title{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--c);letter-spacing:1px}
+.rc-desc{font-size:12px;color:var(--t2)}
+.rc-tag{font-family:var(--mono);font-size:9px;color:var(--g);background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.3);border-radius:4px;padding:4px 10px;text-transform:uppercase;letter-spacing:1px}
+
 /* SKILLS */
 .scat{margin-bottom:24px}
 .cat{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--p);margin-bottom:10px;font-weight:700}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--c);background:rgba(0,245,255,.06);border:1px solid rgba(0,245,255,.22);border-radius:4px;padding:5px 12px;cursor:default;transition:all .2s}
-.chip:hover{background:rgba(0,245,255,.16);border-color:var(--c);box-shadow:0 0 12px rgba(0,245,255,.25);transform:translateY(-1px)}
+.chip{background:var(--bg3);border:1px solid var(--b);border-radius:4px;padding:5px 12px;font-size:12px;color:var(--t);font-family:var(--mono);transition:all .2s}
+.chip:hover{border-color:var(--c);color:var(--c);box-shadow:0 0 10px rgba(0,245,255,.2);transform:translateY(-1px)}
 
-/* TIMELINE */
-.tl{position:relative;padding-left:26px}
-.tl::before{content:'';position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:linear-gradient(180deg,var(--c),var(--p),transparent)}
-.job{position:relative;margin-bottom:26px;padding:18px 20px;background:rgba(0,245,255,.03);border:1px solid var(--b);border-radius:6px;transition:border-color .2s,box-shadow .2s}
-.job:hover{border-color:rgba(0,245,255,.4);box-shadow:0 0 20px rgba(0,245,255,.08)}
-.job::before{content:'';position:absolute;left:-32px;top:22px;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c);border:2px solid var(--bg)}
-.jr{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
-.jc{color:var(--c);font-size:12px;margin-bottom:2px;font-weight:600}
-.jd{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--t2);margin-bottom:8px}
-.jt{color:var(--t2);font-size:12.5px;line-height:1.6}
+/* TIMELINE (EXPERIENCE) */
+.tl{position:relative;padding-left:24px}
+.tl::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:1px;background:linear-gradient(180deg,var(--c),var(--p),transparent)}
+.job{position:relative;margin-bottom:32px}
+.job::before{content:'';position:absolute;left:-28px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+.jr{font-size:16px;font-weight:700;color:#fff}
+.jc{font-size:13px;color:var(--c);margin-bottom:4px;font-weight:600}
+.jd{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1.5px;margin-bottom:8px}
+.jt{font-size:13px;color:var(--t2);line-height:1.6}
 
 /* PROJECTS */
-.pn-link{display:inline-flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;margin-bottom:4px}
-.pn-link:hover .pn{color:var(--c);text-shadow:0 0 12px var(--c)}
-.pn-link:hover .p-ext{background:var(--c);color:var(--bg);box-shadow:0 0 10px var(--c)}
-.p-ext{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--c);background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.35);border-radius:3px;padding:2px 7px;transition:all .2s;vertical-align:middle}
-.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.pc{padding:22px;background:rgba(0,245,255,.03);border:1px solid var(--b);border-radius:8px;transition:all .25s;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
-.pc::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--c),var(--p));opacity:0;transition:opacity .2s}
-.pc:hover{border-color:rgba(0,245,255,.45);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,245,255,.1)}
-.pc:hover::before{opacity:1}
-.pn{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
-.ps{color:var(--c);font-size:10px;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
-.pd{color:var(--t2);font-size:12px;line-height:1.6;margin-bottom:14px}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.pc{background:var(--bg3);border:1px solid var(--b);border-radius:8px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;transition:all .25s}
+.pc:hover{border-color:rgba(0,245,255,.5);box-shadow:0 0 24px rgba(0,245,255,.15);transform:translateY(-3px)}
+.pn{font-size:17px;font-weight:700;color:#fff;margin-bottom:4px}
+.pn-link{display:flex;align-items:center;justify-content:space-between;color:#fff;text-decoration:none;margin-bottom:4px}
+.pn-link:hover .pn{color:var(--c);text-shadow:0 0 10px var(--c)}
+.p-ext{font-family:var(--mono);font-size:10px;color:var(--c);letter-spacing:1px}
+.ps{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--p);margin-bottom:10px;font-weight:600}
+.pd{font-size:12.5px;color:var(--t2);margin-bottom:16px;line-height:1.6}
 .ptags{display:flex;flex-wrap:wrap;gap:6px}
-.ptag{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--p);background:rgba(191,0,255,.09);border:1px solid rgba(191,0,255,.25);border-radius:3px;padding:3px 8px}
+.ptag{font-family:var(--mono);font-size:10px;color:var(--c);background:rgba(0,245,255,.06);border:1px solid rgba(0,245,255,.2);border-radius:3px;padding:2px 7px}
 
 /* EDUCATION */
-.edugrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.educard{padding:20px;background:rgba(0,245,255,.03);border:1px solid var(--b);border-radius:6px;transition:all .2s}
-.educard:hover{border-color:rgba(0,245,255,.35);box-shadow:0 0 16px rgba(0,245,255,.07)}
-.edudeg{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
-.eduinst{color:var(--c);font-size:12px;margin-bottom:4px}
-.eduscore{font-family:var(--mono);font-size:11px;color:var(--g);font-weight:700;margin-bottom:4px}
-.edudesc{font-size:11.5px;color:var(--t2)}
+.edugrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.educard{background:var(--bg3);border:1px solid var(--b);border-radius:8px;padding:22px;transition:all .2s}
+.educard:hover{border-color:rgba(0,245,255,.4);transform:translateY(-2px)}
+.edudeg{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
+.eduinst{font-size:13px;color:var(--c);font-weight:600;margin-bottom:6px}
+.eduscore{font-family:var(--mono);font-size:12px;color:var(--g);font-weight:700;margin-bottom:8px}
+.edudesc{font-size:12px;color:var(--t2);line-height:1.6}
 
 /* ACHIEVEMENTS */
 .agrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -194,23 +201,34 @@ footer{background:var(--bg);border-top:1px solid var(--b);padding:20px 36px;disp
 <section id="hero">
   <div class="grid-bg"></div>
   <div class="hero-c">
-    <div class="badge"><div class="dot"></div><span class="badge-t">Winner, HackX 2025 &bull; Available for Hire</span></div>
+    <div class="badge"><div class="dot"></div><span class="badge-t">Winner, HackX 2025 (National Level) &bull; Open for Opportunities</span></div>
     <h1>Anjali<br><span>Tripathi</span></h1>
-    <p class="role">Full Stack Developer &bull; AI/ML Engineer &bull; 3D Web</p>
+    <p class="role">Full Stack Developer &bull; AI/ML Specialist &bull; 3D Web Experiences</p>
     <p class="bio">
-      Full Stack Developer specializing in the MERN stack, Next.js, REST APIs, MongoDB, and AI/ML model integration.
-      I build scalable web applications, backend services, and intelligent automation systems, and ship them to production.
+      Results-driven Full Stack Developer with hands-on experience in MERN Stack, Next.js, REST APIs, MongoDB, and AI/ML integration. Skilled in building scalable web applications, backend systems, intelligent automation solutions, and deploying production-ready software. Strong problem-solving ability demonstrated through multiple internships, hackathons, and real-world projects.
     </p>
     <div class="stats">
-      <div class="stat"><b>5+</b><span>Internships</span></div><div class="sdiv"></div>
-      <div class="stat"><b>4+</b><span>AI Projects</span></div><div class="sdiv"></div>
-      <div class="stat"><b>6</b><span>Internships</span></div><div class="sdiv"></div>
-      <div class="stat"><b>4</b><span>Hackathons</span></div>
+      <div class="stat"><b>5+</b><span>Tech Internships</span></div><div class="sdiv"></div>
+      <div class="stat"><b>9.38</b><span>B.Tech CGPA</span></div><div class="sdiv"></div>
+      <div class="stat"><b>4+</b><span>AI/ML Projects</span></div><div class="sdiv"></div>
+      <div class="stat"><b>1st</b><span>HackX National Win</span></div>
     </div>
     <div class="cta">
       <a href="#exp" class="btn bp">View Experience</a>
       <a href="#projects" class="btn bo">View Projects</a>
       <a href="#contact" class="btn bp2">Get in Touch</a>
+    </div>
+
+    <!-- 3D ROBOT COMPANION HIGHLIGHT -->
+    <div class="robot-callout">
+      <div class="rc-left">
+        <span class="rc-icon">🤖</span>
+        <div>
+          <div class="rc-title">3D AI ROBOT COMPANION ACTIVE IN SCENE</div>
+          <div class="rc-desc">Custom 3D Robot model implemented live on the desk with interactive mouse tracking and animation.</div>
+        </div>
+      </div>
+      <span class="rc-tag">Interactive 3D</span>
     </div>
   </div>
 </section>
@@ -224,31 +242,31 @@ footer{background:var(--bg);border-top:1px solid var(--b);padding:20px 36px;disp
   <div class="scat">
     <p class="cat">Languages</p>
     <div class="chips">
-      <span class="chip">JavaScript</span><span class="chip">TypeScript</span><span class="chip">Python</span><span class="chip">C++</span><span class="chip">C</span><span class="chip">PHP</span><span class="chip">MySQL</span><span class="chip">SQL</span>
+      <span class="chip">JavaScript</span><span class="chip">Python</span><span class="chip">C</span><span class="chip">C++</span><span class="chip">PHP</span><span class="chip">MySQL</span>
     </div>
   </div>
   <div class="scat">
     <p class="cat">Frontend</p>
     <div class="chips">
-      <span class="chip">React.js</span><span class="chip">Next.js</span><span class="chip">Three.js</span><span class="chip">Tailwind CSS</span><span class="chip">HTML5</span><span class="chip">CSS3</span><span class="chip">WebGL</span><span class="chip">Redux</span>
+      <span class="chip">React.js</span><span class="chip">Next.js</span><span class="chip">Tailwind CSS</span><span class="chip">HTML5</span><span class="chip">CSS3</span><span class="chip">Three.js</span><span class="chip">Responsive Design</span>
     </div>
   </div>
   <div class="scat">
-    <p class="cat">Backend &amp; Databases</p>
+    <p class="cat">Backend &amp; Architecture</p>
     <div class="chips">
-      <span class="chip">Node.js</span><span class="chip">Express.js</span><span class="chip">Flask</span><span class="chip">REST APIs</span><span class="chip">MVC Architecture</span><span class="chip">MongoDB</span><span class="chip">MySQL</span><span class="chip">SQLite</span>
+      <span class="chip">Node.js</span><span class="chip">Express.js</span><span class="chip">Flask</span><span class="chip">REST APIs</span><span class="chip">MVC Architecture</span><span class="chip">MongoDB</span><span class="chip">MySQL</span>
     </div>
   </div>
   <div class="scat">
     <p class="cat">AI / Machine Learning</p>
     <div class="chips">
-      <span class="chip">TensorFlow</span><span class="chip">PyTorch</span><span class="chip">Scikit-learn</span><span class="chip">Keras</span><span class="chip">OpenCV</span><span class="chip">XGBoost</span><span class="chip">NLTK</span><span class="chip">Pandas</span><span class="chip">NumPy</span>
+      <span class="chip">TensorFlow</span><span class="chip">PyTorch</span><span class="chip">Scikit-learn</span><span class="chip">Keras</span><span class="chip">Pandas</span><span class="chip">NumPy</span><span class="chip">NLTK</span><span class="chip">XGBoost</span><span class="chip">OpenCV</span>
     </div>
   </div>
   <div class="scat">
-    <p class="cat">Tools &amp; DevOps</p>
+    <p class="cat">Tools &amp; Platforms</p>
     <div class="chips">
-      <span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">Postman</span><span class="chip">Google AutoML</span><span class="chip">Docker</span><span class="chip">Linux</span><span class="chip">VS Code</span>
+      <span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">Postman</span><span class="chip">OpenCV</span><span class="chip">Google AutoML</span><span class="chip">VS Code</span>
     </div>
   </div>
 </section>
@@ -258,43 +276,37 @@ footer{background:var(--bg);border-top:1px solid var(--b);padding:20px 36px;disp
 <div class="sec-wrap">
 <section id="exp">
   <p class="lbl">03 / Career</p>
-  <h2 class="ttl">Work Experience</h2>
+  <h2 class="ttl">Professional Experience</h2>
   <div class="tl">
-    <div class="job">
-      <div class="jr">AI Intern</div>
-      <div class="jc">Web Access Pro</div>
-      <div class="jd">Sep 2026 &mdash; Nov 2026</div>
-      <p class="jt">Engineered high-accessibility, responsive web applications following WCAG standards; enhanced cross-browser performance, UI responsiveness, and component modularity.</p>
-    </div>
     <div class="job">
       <div class="jr">AI ML Intern</div>
       <div class="jc">xIoTz Pvt Ltd</div>
       <div class="jd">Apr 2026 &mdash; May 2026</div>
-      <p class="jt">Built and integrated machine learning models in Python for real-world AI applications; handled end-to-end data preprocessing, model training, accuracy evaluation, and cloud deployment.</p>
+      <p class="jt">Developed and integrated machine learning models using Python for real-world AI applications. Worked on data preprocessing, model training, evaluation, and deployment workflows.</p>
     </div>
     <div class="job">
       <div class="jr">Web Developer Intern</div>
       <div class="jc">Lirion Technologies</div>
       <div class="jd">May 2025 &mdash; Jun 2025</div>
-      <p class="jt">Developed immersive 3D web experiences using Next.js and Tailwind CSS; optimized frontend rendering performance and ensured seamless responsive design across devices.</p>
+      <p class="jt">Developed immersive 3D web experiences using Next.js and Tailwind CSS. Optimized frontend performance and responsive design across multiple devices.</p>
     </div>
     <div class="job">
       <div class="jr">Full Stack Developer Intern</div>
       <div class="jc">CodeWebX Technologies</div>
       <div class="jd">Jan 2025 &mdash; Mar 2025</div>
-      <p class="jt">Engineered MERN applications with scalable backend and secure RESTful APIs; actively participated in sprint features, unit testing, debugging, and production deployments.</p>
+      <p class="jt">Built full-stack MERN applications with scalable backend architecture and REST APIs. Participated in feature development, testing, debugging, and deployment processes.</p>
     </div>
     <div class="job">
       <div class="jr">AI &amp; XR Intern</div>
       <div class="jc">Flaunch</div>
       <div class="jd">Oct 2024 &mdash; Dec 2024</div>
-      <p class="jt">Integrated computer vision models into Extended Reality (XR) applications; created low-latency real-time video processing pipelines with Python and ML frameworks.</p>
+      <p class="jt">Integrated AI-powered computer vision models into XR applications. Developed intelligent real-time pipelines using Python and machine learning frameworks.</p>
     </div>
     <div class="job">
       <div class="jr">Web Development Intern</div>
       <div class="jc">Tech Elecon Pvt Ltd</div>
       <div class="jd">Jun 2024 &mdash; Aug 2024</div>
-      <p class="jt">Built robust REST APIs using Node.js and Express.js; developed MongoDB-backed full-stack applications adhering strictly to MVC architecture.</p>
+      <p class="jt">Built REST APIs using Node.js and Express.js, improving backend efficiency. Developed MongoDB-backed applications following MVC architecture principles.</p>
     </div>
   </div>
 </section>
@@ -310,33 +322,33 @@ footer{background:var(--bg);border-top:1px solid var(--b);padding:20px 36px;disp
       <div>
         <a href="https://codetrust.vercel.app/" target="_blank" rel="noopener" class="pn-link"><span class="pn">CodeTrust</span><span class="p-ext">&#x2197; Live Demo</span></a>
         <div class="ps">AI Hallucination &amp; Vulnerability Detector</div>
-        <p class="pd">Automated scanner detecting hallucinations, syntax flaws, and security vulnerabilities in AI-generated code with automated validation and risk reporting.</p>
+        <p class="pd">Developed an AI-powered platform to detect hallucinations and security vulnerabilities in AI-generated code. Improved code reliability through automated validation and risk analysis mechanisms.</p>
       </div>
-      <div class="ptags"><span class="ptag">Python</span><span class="ptag">AI/ML</span><span class="ptag">FastAPI</span><span class="ptag">React</span><span class="ptag">AST</span></div>
+      <div class="ptags"><span class="ptag">AI/ML</span><span class="ptag">Python</span><span class="ptag">Security Analysis</span><span class="ptag">Code Validation</span></div>
     </div>
     <div class="pc">
       <div>
         <a href="https://format-hub.onrender.com/" target="_blank" rel="noopener" class="pn-link"><span class="pn">Format Hub</span><span class="p-ext">&#x2197; Live Demo</span></a>
-        <div class="ps">Universal File Conversion Platform</div>
-        <p class="pd">Full-stack document conversion platform: CSV to Excel, PDF, SQL, and SQLite with file validation, column mapping, split, and merge tools.</p>
+        <div class="ps">CSV File Conversion Platform</div>
+        <p class="pd">Built a full-stack file conversion platform supporting CSV to Excel, PDF, SQL, and SQLite transformations. Implemented file processing, validation, merge, and split functionalities.</p>
       </div>
-      <div class="ptags"><span class="ptag">Node.js</span><span class="ptag">React</span><span class="ptag">Express</span><span class="ptag">MongoDB</span><span class="ptag">Multer</span></div>
+      <div class="ptags"><span class="ptag">Full Stack</span><span class="ptag">Node.js</span><span class="ptag">React</span><span class="ptag">File Processing</span></div>
     </div>
     <div class="pc">
       <div>
-        <a href="https://room-mate-match-izrf.vercel.app/" target="_blank" rel="noopener" class="pn-link"><span class="pn">AI Roommate Matching</span><span class="p-ext">&#x2197; Live Demo</span></a>
-        <div class="ps">Intelligent Recommendation System</div>
-        <p class="pd">AI-powered multi-factor preference matching with compatibility scoring to optimize roommate pairing and living habit alignment.</p>
+        <a href="https://room-mate-match-izrf.vercel.app/" target="_blank" rel="noopener" class="pn-link"><span class="pn">AI Powered Roommate Matching</span><span class="p-ext">&#x2197; Live Demo</span></a>
+        <div class="ps">Intelligent Compatibility System</div>
+        <p class="pd">Developed a MERN-based roommate recommendation system using AI-powered preference matching. Designed intelligent compatibility scoring to improve roommate selection accuracy.</p>
       </div>
-      <div class="ptags"><span class="ptag">MERN</span><span class="ptag">Machine Learning</span><span class="ptag">REST API</span><span class="ptag">Socket.io</span></div>
+      <div class="ptags"><span class="ptag">MERN Stack</span><span class="ptag">AI Matching</span><span class="ptag">MongoDB</span><span class="ptag">React</span></div>
     </div>
     <div class="pc">
       <div>
         <a href="https://sangyanshield.aurocode.in/" target="_blank" rel="noopener" class="pn-link"><span class="pn">Sangyaan Shield</span><span class="p-ext">&#x2197; Live Demo</span></a>
         <div class="ps">Digital Fraud Resilience &amp; Preemptive Defense</div>
-        <p class="pd">Digital Fraud Resilience &mdash; Preemptive Defense, addressing real-world threats such as fake SEBI registration numbers, deepfakes, misleading financial claims, and fraudulent investment groups.</p>
+        <p class="pd">Digital Fraud Resilience &mdash; Preemptive Defense platform addressing threats such as fake SEBI registrations, deepfakes, and fraudulent investment operations.</p>
       </div>
-      <div class="ptags"><span class="ptag">AI/ML</span><span class="ptag">Cybersecurity</span><span class="ptag">Deepfake Detection</span><span class="ptag">Python</span><span class="ptag">NLP</span></div>
+      <div class="ptags"><span class="ptag">AI/ML</span><span class="ptag">Computer Vision</span><span class="ptag">Deepfake Defense</span><span class="ptag">Python</span></div>
     </div>
   </div>
 </section>
@@ -349,15 +361,16 @@ footer{background:var(--bg);border-top:1px solid var(--b);padding:20px 36px;disp
   <h2 class="ttl">Education</h2>
   <div class="edugrid">
     <div class="educard">
-      <div class="edudeg">B.Tech in Computer Engineering</div>
-      <div class="eduinst">Madhuben and Bhanubhai Patel Institute of Technology, Anand (CVMU)</div>
-            <p class="edudesc">2022 &mdash; 2026 &bull; Relevant Coursework: Data Structures, Algorithms, Machine Learning, DBMS, Web Engineering, Computer Networks.</p>
+      <div class="edudeg">Bachelor of Technology &mdash; Computer Engineering</div>
+      <div class="eduinst">Madhuben and Bhanubhai Patel Institute of Technology, Anand</div>
+      <div class="eduscore">CGPA: 9.38 / 10.0</div>
+      <p class="edudesc">Relevant coursework: Machine Learning, Web Engineering, Data Structures &amp; Algorithms, Database Management Systems, Object-Oriented Programming.</p>
     </div>
     <div class="educard">
-      <div class="edudeg">Higher Secondary &amp; Secondary School</div>
-      <div class="eduinst">Gujarat Secondary and Higher Secondary Education Board</div>
-      <div class="eduscore">Class XII: 84% &bull; Class X: 94%</div>
-      <p class="edudesc">Excellence in Mathematics, Computer Science, and Physics with top percentile rankings.</p>
+      <div class="edudeg">Secondary &amp; Higher Secondary Education</div>
+      <div class="eduinst">Academic Excellence</div>
+      <div class="eduscore">Class X: 94% &bull; Class XII: 84%</div>
+      <p class="edudesc">Strong foundation in Mathematics, Sciences, and Computer Applications with high academic distinction.</p>
     </div>
   </div>
 </section>
@@ -369,12 +382,12 @@ footer{background:var(--bg);border-top:1px solid var(--b);padding:20px 36px;disp
   <p class="lbl">06 / Recognition</p>
   <h2 class="ttl">Achievements &amp; Certifications</h2>
   <div class="agrid">
-    <div class="ac"><div class="ai">&#x1F3C6;</div><div class="at">HackX 2025 &mdash; Winner</div><div class="as">National-Level 36-Hour Hackathon</div></div>
-    <div class="ac"><div class="ai">&#x1F948;</div><div class="at">CVMU Hackathon 3.0</div><div class="as">Finalist &bull; State-Level</div></div>
-    <div class="ac"><div class="ai">&#x1F916;</div><div class="at">AIML Hackathon</div><div class="as">Finalist &bull; Parul University</div></div>
-    <div class="ac"><div class="ai">&#x1F469;&#x200D;&#x1F4BB;</div><div class="at">SheBuilds Hackathon</div><div class="as">Finalist &bull; Women in Tech</div></div>
-    <div class="ac"><div class="ai">&#x1F4BB;</div><div class="at">6+ Tech Internships</div><div class="as">AI/ML &bull; Full Stack &bull; Web</div></div>
-    <div class="ac"><div class="ai">&#x1F4DC;</div><div class="at">Google AutoML Certified</div><div class="as">ML Foundations &bull; Full Stack</div></div>
+    <div class="ac"><div class="ai">🏆</div><div class="at">Winner &mdash; HackX 2025</div><div class="as">National-Level Hackathon</div></div>
+    <div class="ac"><div class="ai">🏅</div><div class="at">Finalist &mdash; CVMU Hackathon 3.0</div><div class="as">State-Level Innovation Hackathon</div></div>
+    <div class="ac"><div class="ai">🤖</div><div class="at">Finalist &mdash; AIML Hackathon</div><div class="as">Parul University</div></div>
+    <div class="ac"><div class="ai">👩‍💻</div><div class="at">Finalist &mdash; SheBuilds Hackathon</div><div class="as">Women in Tech Innovation</div></div>
+    <div class="ac"><div class="ai">🎓</div><div class="at">Google AutoML Fundamentals</div><div class="as">Machine Learning Certification</div></div>
+    <div class="ac"><div class="ai">📜</div><div class="at">Full Stack Web Certification</div><div class="as">Machine Learning Foundations</div></div>
   </div>
 </section>
 </div>
@@ -388,7 +401,7 @@ footer{background:var(--bg);border-top:1px solid var(--b);padding:20px 36px;disp
     <a class="cl" href="mailto:tripathianjali760@gmail.com"><span class="ci">&#x2709;</span><div><span class="clb">Email</span><span class="cv">tripathianjali760@gmail.com</span></div></a>
     <a class="cl" href="tel:+918347994864"><span class="ci">&#x1F4F1;</span><div><span class="clb">Phone</span><span class="cv">+91 83479 94864</span></div></a>
     <a class="cl" href="https://github.com/anjali-0404" target="_blank" rel="noopener"><span class="ci">&#x1F419;</span><div><span class="clb">GitHub</span><span class="cv">github.com/anjali-0404</span></div></a>
-    <a class="cl" href="https://linkedin.com/in/anjali-tripathi" target="_blank" rel="noopener"><span class="ci">&#x1F4BC;</span><div><span class="clb">LinkedIn</span><span class="cv">linkedin.com/in/anjali-tripathi</span></div></a>
+    <a class="cl" href="https://linkedin.com/in/anjali-tripathi-0b5097278" target="_blank" rel="noopener"><span class="ci">&#x1F4BC;</span><div><span class="clb">LinkedIn</span><span class="cv">anjali-tripathi-0b5097278</span></div></a>
   </div>
 </section>
 </div>

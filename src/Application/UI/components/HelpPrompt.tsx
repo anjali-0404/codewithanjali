@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import UIEventBus from '../EventBus';
 
-const HELP_TEXT = 'Scroll up or click to zoom into screen';
+const HELP_TEXT = 'Scroll or click monitor to zoom • Click 3D Robot to interact';
 
 type HelpPromptProps = {};
 

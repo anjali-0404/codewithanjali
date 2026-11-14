@@ -168,7 +168,7 @@ const LoadingScreen: React.FC<LoadingProps> = () => {
                             </div>
                         </div>
                         <div style={styles.headerInfo}>
-                            <p style={styles.headerInfoText}>Build: 2024-11-11</p>
+                            <p style={styles.headerInfoText}>Build: 2026</p>
                             <p style={styles.headerInfoText}>AT-BIOS © 2024 Anjali Tripathi</p>
                             <p style={styles.headerInfoText}>Stack: MERN · Next.js · AI/ML</p>
                         </div>
