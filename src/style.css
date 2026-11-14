@@ -1,13 +1,20 @@
-* {
+/* =====================================================
+   ANJALI TRIPATHI PORTFOLIO — GLOBAL STYLES
+   ===================================================== */
+
+*, *::before, *::after {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
     overflow: hidden;
+    background-color: #020810;
+    height: 100%;
 }
 
+/* ── WebGL canvas ─────────────────────────────────── */
 .webgl {
     position: fixed;
     top: 0;
@@ -15,6 +22,65 @@ body {
     outline: none;
 }
 
+/* ── HUD wrapper absolute position ───────────────── */
+.interface-wrapper {
+    width: 100%;
+    top: 64px;
+    left: 64px;
+    position: absolute;
+}
+
+/* ── Icon control containers ──────────────────────── */
+.icon-control-container {
+    height: 26.5px;
+    width: 26.5px;
+}
+
+/* ── Mode toggle button ───────────────────────────── */
+.mode-btn {
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.mode-btn:hover {
+    background: rgba(0, 245, 255, 0.12) !important;
+    border-color: rgba(0, 245, 255, 0.7) !important;
+    box-shadow: 0 0 16px rgba(0, 245, 255, 0.25);
+}
+
+/* ── Flat site iframe ─────────────────────────────── */
+#flat-site {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #020810;
+    z-index: 20;
+    display: none;
+}
+
+/* In monitor view: raise #css above WebGL so iframe receives all scroll, click, and text events */
+body.in-monitor #css {
+    z-index: 10 !important;
+    pointer-events: auto !important;
+}
+body.in-monitor #overlay {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+body.in-monitor #ui-interactive {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateX(-24px);
+}
+
+/* ── Flat mode: show iframe, hide 3D ──────────────── */
+body.flat #flat-site  { display: block; }
+body.flat #css        { display: none; }
+body.flat #webgl      { display: none; }
+body.flat #overlay    { display: none; }
+body.flat #ui-interactive { display: none; }
+
+/* ── CRT jitter on the monitor iframe ─────────────── */
 .jitter {
     animation-duration: 0.3s;
     animation-timing-function: ease-in-out;
@@ -24,68 +90,35 @@ body {
     z-index: -10;
 }
 
-.interface-wrapper {
-    width: 100%;
-    top: 64px;
-    left: 64px;
+@keyframes jittery {
+    10%  { transform: translate(-0.1px, -0.15px) scale(1,1); }
+    20%  { transform: translate(0.15px,  0.10px) scale(1,1); }
+    30%  { transform: translate(-0.2px, -0.25px) scale(1,1); }
+    40%  { transform: translate(0.05px,  0.10px) scale(1,1); }
+    50%  { transform: translate(-0.025px,-0.05px) scale(1,1); }
+    60%  { transform: translate(0px,    0.075px) scale(1,1); }
+    70%  { transform: translate(-0.075px,-0.1px) scale(1,1); }
+    80%  { transform: translate(0.075px, 0.125px) scale(1,1); }
+    90%  { transform: translate(-0.125px,-0.075px) scale(1,1); }
+    100% { transform: translate(0.075px, 0.025px) scale(1,1); }
 }
 
-.icon-control-container {
-    height: 26.5px;
-    width: 26.5px;
-}
-
+/* ── Responsive overrides ─────────────────────────── */
 @media only screen and (max-width: 768px) {
     .interface-wrapper {
-        width: 100%;
         top: 24px;
         left: 24px;
     }
-
     .icon-control-container {
         height: 19.5px;
         width: 19.5px;
     }
 }
 
-@keyframes jittery {
-    10% {
-        transform: translate(-0.1px, -0.15px) scale(1, 1);
-    }
-
-    20% {
-        transform: translate(0.15px, 0.1px) scale(1, 1);
-    }
-
-    30% {
-        transform: translate(-0.2px, -0.25px) scale(1, 1);
-    }
-
-    40% {
-        transform: translate(0.05px, 0.1px) scale(1, 1);
-    }
-
-    50% {
-        transform: translate(-0.025px, -0.05px) scale(1, 1);
-    }
-
-    60% {
-        transform: translate(0px, 0.075px) scale(1, 1);
-    }
-
-    70% {
-        transform: translate(-0.075px, -0.1px) scale(1, 1);
-    }
-
-    80% {
-        transform: translate(0.075px, 0.125px) scale(1, 1);
-    }
-
-    90% {
-        transform: translate(-0.125px, -0.075px) scale(1, 1);
-    }
-
-    100% {
-        transform: translate(0.075px, 0.025px) scale(1, 1);
-    }
+/* ── Float particle animation ─────────────────────── */
+@keyframes floatParticle {
+    0%   { transform: translateY(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(-80px); opacity: 0; }
 }

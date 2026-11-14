@@ -84,13 +84,9 @@ const iconVars = {
 
 const styles: StyleSheetCSS = {
     container: {
-        background: 'black',
-        // padding: 4,
-        // paddingLeft: 8,
-        // paddingRight: 8,
+        background: 'rgba(2, 8, 16, 0.72)',
         textAlign: 'center',
         display: 'flex',
-        // position: 'absolute',
         boxSizing: 'border-box',
         justifyContent: 'center',
         alignItems: 'center',

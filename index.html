@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anjali Tripathi — Full Stack &amp; AI/ML Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --c:#00f5ff;--p:#bf00ff;--g:#00ff88;--gold:#ffd700;
+  --bg:#020810;--bg2:#07111f;--bg3:#0a1830;
+  --t:#dbe8f7;--t2:#8fa6c4;--b:rgba(0,245,255,.2);
+  --mono:'Share Tech Mono',monospace;
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#020810;color:var(--t);font:13px var(--mono)}
+
+/* Canvas & CSS layers */
+#css,#gl,#flat{position:fixed;inset:0;width:100%;height:100%}
+#css{z-index:1;cursor:pointer}
+#gl{z-index:2;pointer-events:none}
+#flat{z-index:20;border:0;display:none;background:#020810;width:100%;height:100%}
+body.flat #flat{display:block}
+body.flat #css,body.flat #gl,body.flat #hud{display:none}
+
+/* In monitor view, raise #css to top so iframe has native mouse/scroll interaction */
+body.in-monitor #css{z-index:10;pointer-events:auto}
+body.in-monitor #hud{opacity:0;pointer-events:none;transform:translateX(-20px)}
+
+/* HUD Sidebar (Left side: Name, Status, Clock, Title) */
+#hud{
+  position:fixed;left:24px;top:24px;z-index:8;
+  display:flex;flex-direction:column;gap:8px;
+  transition:opacity .35s ease,transform .35s ease;
+  pointer-events:none;
+}
+.g{
+  background:rgba(2,8,16,.85);border:1px solid rgba(0,245,255,.3);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  padding:8px 16px;border-radius:6px;width:fit-content;
+  box-shadow:0 0 20px rgba(0,245,255,.08);
+}
+.nm{display:flex;gap:12px;align-items:stretch;padding:10px 18px 10px 0}
+.bar{width:4px;background:linear-gradient(180deg,var(--c),var(--p));border-radius:2px}
+#n{font-size:22px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#fff;text-shadow:0 0 20px rgba(0,245,255,.9);min-height:26px}
+.ok{font-size:10px;color:var(--g);margin-top:4px;display:flex;align-items:center;gap:6px;letter-spacing:1.5px}
+.ok i{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g);animation:pulseDot 1.6s infinite}
+@keyframes pulseDot{50%{opacity:.3}}
+#t{font-size:11px;color:#a0c4ff;letter-spacing:2px;min-height:16px}
+.row{display:flex;gap:8px;align-items:center}
+#clk{color:#dbe8f7;letter-spacing:1.5px;font-size:11px}
+#hint{
+  font-size:10px;color:rgba(0,245,255,.8);letter-spacing:1.5px;
+  cursor:pointer;pointer-events:auto;transition:all .2s;
+}
+#hint:hover{background:rgba(0,245,255,.15);border-color:var(--c);color:#fff}
+
+/* Exit / Zoom button */
+#exit-btn{
+  position:fixed;top:20px;right:24px;z-index:30;
+  display:none;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--c);background:rgba(2,8,16,.9);border:1px solid rgba(0,245,255,.45);
+  border-radius:6px;padding:9px 18px;cursor:pointer;
+  box-shadow:0 0 16px rgba(0,245,255,.2);transition:all .2s;
+}
+#exit-btn:hover{background:rgba(0,245,255,.15);border-color:var(--c);box-shadow:0 0 24px rgba(0,245,255,.4)}
+body.in-monitor #exit-btn{display:flex}
+
+/* Mode toggle button (bottom right) */
+#mode{
+  position:fixed;right:24px;bottom:24px;z-index:25;
+  font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--c);background:rgba(2,8,16,.85);border:1px solid rgba(0,245,255,.35);
+  border-radius:6px;padding:8px 16px;cursor:pointer;
+  backdrop-filter:blur(8px);transition:all .2s;
+}
+#mode:hover{background:rgba(0,245,255,.15);border-color:var(--c);box-shadow:0 0 16px rgba(0,245,255,.25)}
+
+/* Boot loader screen */
+#ld{
+  position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;background:#020810;color:var(--c);
+  font-family:var(--mono);letter-spacing:4px;transition:opacity .5s ease;
+}
+#ld.done{opacity:0;pointer-events:none}
+.ld-bar{width:220px;height:4px;background:rgba(0,245,255,.15);border-radius:2px;margin-top:16px;overflow:hidden}
+.ld-fill{width:0;height:100%;background:linear-gradient(90deg,var(--c),var(--p));animation:loadAnim 1s ease forwards}
+@keyframes loadAnim{to{width:100%}}
+</style>
+</head>
+<body>
+
+<div id="css"></div>
+<canvas id="gl"></canvas>
+<iframe id="flat" title="Anjali Tripathi Portfolio — Flat View"></iframe>
+
+<!-- HUD Sidebar (Name, Role, Status, Clock, Click Hint) -->
+<div id="hud">
+  <div class="g nm">
+    <div class="bar"></div>
+    <div>
+      <div id="n">ANJALI TRIPATHI</div>
+      <div class="ok"><i></i>Available for hire &bull; Winner, HackX 2025</div>
+    </div>
+  </div>
+  <div class="g" id="t">Full Stack &bull; AI/ML &bull; 3D Web</div>
+  <div class="row">
+    <div class="g" id="clk"></div>
+    <div class="g" id="hint" title="Click to zoom in">&#x2922; Click Computer to Open Resume</div>
+  </div>
+</div>
+
+<button id="exit-btn">&#x21A9; Zoom Out (Esc)</button>
+<button id="mode">&#x2B21; Flat View</button>
+
+<div id="ld">
+  <div>BOOTING ANJALIOS v2.0...</div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
+</div>
+
+<!-- Three.js + CSS3DRenderer from cdnjs/jsdelivr -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS3DRenderer.js"></script>
+
+<script>
+(() => {
+'use strict';
+
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ── Full Resume HTML to display inside the computer monitor screen ────────── */
+const PORTFOLIO_CONTENT = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Anjali Tripathi — Resume</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --c:#00f5ff;--p:#bf00ff;--g:#00ff88;--gold:#ffd700;
+  --bg:#020810;--bg2:#07111f;--bg3:#0a1830;
+  --t:#dbe8f7;--t2:#8fa6c4;--b:rgba(0,245,255,.2);
+  --mono:'Share Tech Mono',monospace;
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t);font:14px/1.65 var(--sans);padding-bottom:60px}
+a{color:var(--c);text-decoration:none}
+a:hover{text-shadow:0 0 10px var(--c)}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(0,245,255,.3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--c)}
+
+/* Exit Button */
+.exit-btn{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;background:rgba(255,50,80,.18);border:1px solid rgba(255,50,80,.45);padding:5px 12px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.exit-btn:hover{background:rgba(255,50,80,.38);border-color:#ff3355;box-shadow:0 0 12px rgba(255,50,80,.4);}
+
+/* Top Navigation Bar */
+nav{
+  position:sticky;top:0;z-index:99;
+  background:rgba(2,8,16,.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--b);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:48px;
+}
+.brand{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--c);font-weight:700}
+.links{display:flex;gap:4px;list-style:none}
+.links a{
+  font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--t2);padding:6px 12px;border:1px solid transparent;border-radius:4px;transition:all .2s;
+}
+.links a:hover,.links a.on{color:var(--c);border-color:rgba(0,245,255,.4);background:rgba(0,245,255,.08)}
+
+/* Sections */
+section{padding:42px 32px 36px;max-width:1100px;margin:0 auto}
+.sec-wrap:nth-child(even){background:var(--bg2)}
+.lbl{font-family:var(--mono);font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--c);margin-bottom:6px}
+.ttl{font-size:24px;font-weight:800;color:#fff;margin-bottom:24px;position:relative;display:inline-block}
+.ttl::after{content:'';position:absolute;bottom:-6px;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--c),var(--p),transparent)}
+
+/* Hero Header */
+.badge{
+  display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,136,.08);
+  border:1px solid rgba(0,255,136,.3);border-radius:20px;padding:5px 14px;margin-bottom:18px;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g)}
+.badge-t{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g);font-weight:600}
+h1{font-size:46px;font-weight:800;line-height:1.05;margin-bottom:10px}
+h1 span{color:var(--c);text-shadow:0 0 28px rgba(0,245,255,.5)}
+.role{font-size:15px;color:var(--t2);margin-bottom:20px;font-weight:500}
+.bio{font-size:13.5px;color:var(--t);max-width:820px;margin-bottom:24px;line-height:1.7}
+.stats{display:flex;flex-wrap:wrap;gap:24px;margin-bottom:28px}
+.stat b{display:block;font-size:26px;font-weight:800;color:var(--c);line-height:1}
+.stat span{font-size:9px;color:var(--t2);letter-spacing:1.5px;font-family:var(--mono);text-transform:uppercase}
+.sdiv{width:1px;background:var(--b)}
+.cta{display:flex;flex-wrap:wrap;gap:10px}
+.btn{
+  font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  padding:10px 20px;border:1px solid;border-radius:4px;cursor:pointer;transition:all .2s;font-weight:600;
+}
+.bp{color:var(--bg);background:var(--c);border-color:var(--c);box-shadow:0 0 16px rgba(0,245,255,.3)}
+.bp:hover{box-shadow:0 0 28px rgba(0,245,255,.6)}
+.bo{color:var(--c);background:transparent;border-color:rgba(0,245,255,.4)}
+.bo:hover{background:rgba(0,245,255,.1);border-color:var(--c)}
+
+/* Skills */
+.scat{margin-bottom:20px}
+.cat{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--p);margin-bottom:8px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--c);
+  background:rgba(0,245,255,.06);border:1px solid rgba(0,245,255,.2);
+  border-radius:4px;padding:4px 12px;
+}
+
+/* Experience Timeline */
+.tl{position:relative;padding-left:24px}
+.tl::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:linear-gradient(180deg,var(--c),var(--p),transparent)}
+.job{position:relative;margin-bottom:22px;padding:16px 18px;background:rgba(0,245,255,.03);border:1px solid var(--b);border-radius:6px}
+.job::before{content:'';position:absolute;left:-30px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);border:2px solid var(--bg)}
+.jr{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
+.jc{color:var(--c);font-size:11.5px;font-weight:600;margin-bottom:2px}
+.jd{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--t2);margin-bottom:8px}
+.job-bullets{list-style:none;padding:0}
+.job-bullets li{font-size:12px;color:var(--t2);line-height:1.6;position:relative;padding-left:16px;margin-bottom:3px}
+.job-bullets li::before{content:'>';position:absolute;left:0;color:var(--c);font-family:var(--mono)}
+
+/* Projects */
+.pn-link{display:inline-flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;margin-bottom:4px}
+.pn-link:hover .pn{color:var(--c);text-shadow:0 0 12px var(--c)}
+.pn-link:hover .p-ext{background:var(--c);color:var(--bg);box-shadow:0 0 10px var(--c)}
+.p-ext{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--c);background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.35);border-radius:3px;padding:2px 7px;transition:all .2s;vertical-align:middle}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pc{padding:18px;background:rgba(0,245,255,.03);border:1px solid var(--b);border-radius:6px}
+.pn{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.ps{color:var(--c);font-size:10px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.pd{color:var(--t2);font-size:12px;line-height:1.55;margin-bottom:12px}
+.ptags{display:flex;flex-wrap:wrap;gap:5px}
+.ptag{font-family:var(--mono);font-size:9px;color:var(--p);background:rgba(191,0,255,.09);border:1px solid rgba(191,0,255,.25);border-radius:3px;padding:2px 7px}
+
+/* Education & Scores */
+.edugrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.educard{padding:18px;background:rgba(0,245,255,.03);border:1px solid var(--b);border-radius:6px}
+.edudeg{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.eduinst{color:var(--c);font-size:11.5px;margin-bottom:4px}
+.eduscore{font-family:var(--mono);font-size:11px;color:var(--g);font-weight:700;margin-bottom:4px}
+.edudesc{font-size:11.5px;color:var(--t2)}
+
+/* Achievements */
+.agrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ac{background:rgba(255,215,0,.04);border:1px solid rgba(255,215,0,.2);border-radius:6px;padding:14px}
+.ai{font-size:20px;margin-bottom:6px}
+.at{font-size:12px;font-weight:700;color:var(--gold);margin-bottom:2px}
+.as{font-size:10.5px;color:var(--t2)}
+
+/* Contact */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cl{display:flex;align-items:center;gap:12px;background:rgba(0,245,255,.03);border:1px solid var(--b);border-radius:6px;padding:12px 16px;color:var(--t)}
+.ci{font-size:18px;flex-shrink:0}
+.clb{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--t2);display:block;margin-bottom:2px}
+.cv{font-size:11.5px;color:var(--c);font-weight:600}
+
+footer{padding:24px 32px;border-top:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto}
+.fc{font-family:var(--mono);font-size:10px;color:rgba(200,214,229,.4)}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">AT.sys // RESUME</span>
+  <button id="exit-screen-btn" class="exit-btn" onclick="window.parent.postMessage({type:'exit'},'*')">&#x2715; Zoom Out</button><ul class="links">
+    <li><a href="#summary">Summary</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#exp">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#edu">Education</a></li>
+    <li><a href="#wins">Awards</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Summary / Hero -->
+<div class="sec-wrap">
+<section id="summary">
+  <div class="badge"><div class="dot"></div><span class="badge-t">Winner, HackX 2025 &bull; Available for Hire</span></div>
+  <h1>Anjali<br><span>Tripathi</span></h1>
+  <p class="role">Full Stack Developer &bull; AI/ML Engineer &bull; 3D Web</p>
+  <p class="bio">
+    Results-driven Full Stack Developer with hands-on experience in MERN Stack, Next.js, REST APIs, MongoDB, and AI/ML integration. Skilled in building scalable web applications, backend systems, intelligent automation solutions, and deploying production-ready software. Strong problem-solving ability demonstrated through multiple internships, hackathons, and real-world projects.
+  </p>
+  <div class="stats">
+    <div class="stat"><b>5+</b><span>Internships</span></div><div class="sdiv"></div>
+    <div class="stat"><b>4+</b><span>AI Projects</span></div><div class="sdiv"></div>
+    <div class="stat"><b>6</b><span>Internships</span></div><div class="sdiv"></div>
+    <div class="stat"><b>4</b><span>Hackathons</span></div>
+  </div>
+  <div class="cta">
+    <a href="#exp" class="btn bp">View Experience</a>
+    <a href="#projects" class="btn bo">View Projects</a>
+  </div>
+</section>
+</div>
+
+<!-- Skills -->
+<div class="sec-wrap">
+<section id="skills">
+  <p class="lbl">02 / Technical Stack</p>
+  <h2 class="ttl">Technical Skills</h2>
+  <div class="scat">
+    <p class="cat">Languages</p>
+    <div class="chips">
+      <span class="chip">JavaScript</span><span class="chip">Python</span><span class="chip">C</span><span class="chip">C++</span><span class="chip">PHP</span><span class="chip">MySQL</span>
+    </div>
+  </div>
+  <div class="scat">
+    <p class="cat">Frontend</p>
+    <div class="chips">
+      <span class="chip">HTML5</span><span class="chip">CSS3</span><span class="chip">React.js</span><span class="chip">Next.js</span><span class="chip">Tailwind CSS</span>
+    </div>
+  </div>
+  <div class="scat">
+    <p class="cat">Backend &amp; Databases</p>
+    <div class="chips">
+      <span class="chip">Node.js</span><span class="chip">Express.js</span><span class="chip">Flask</span><span class="chip">REST APIs</span><span class="chip">MVC Architecture</span><span class="chip">MongoDB</span><span class="chip">MySQL</span>
+    </div>
+  </div>
+  <div class="scat">
+    <p class="cat">AI / Machine Learning</p>
+    <div class="chips">
+      <span class="chip">TensorFlow</span><span class="chip">PyTorch</span><span class="chip">Scikit-learn</span><span class="chip">Keras</span><span class="chip">Pandas</span><span class="chip">NumPy</span><span class="chip">NLTK</span><span class="chip">XGBoost</span><span class="chip">OpenCV</span>
+    </div>
+  </div>
+  <div class="scat">
+    <p class="cat">Tools &amp; Platforms</p>
+    <div class="chips">
+      <span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">Postman</span><span class="chip">Google AutoML</span>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- Experience -->
+<div class="sec-wrap">
+<section id="exp">
+  <p class="lbl">03 / Experience</p>
+  <h2 class="ttl">Professional Experience</h2>
+  <div class="tl">
+    <div class="job">
+      <div class="jr">AI Intern</div>
+      <div class="jc">Web Access Pro</div>
+      <div class="jd">Sep 2026 &mdash; Nov 2026</div>
+      <ul class="job-bullets">
+        <li>Engineered high-accessibility, responsive web applications following WCAG standards.</li>
+        <li>Enhanced cross-browser performance, UI responsiveness, and component modularity.</li>
+      </ul>
+    </div>
+    <div class="job">
+      <div class="jr">AI ML Intern</div>
+      <div class="jc">xIoTz Pvt Ltd</div>
+      <div class="jd">Apr 2026 &mdash; May 2026</div>
+      <ul class="job-bullets">
+        <li>Developed and integrated machine learning models using Python for real-world AI applications.</li>
+        <li>Worked on data preprocessing, model training, evaluation, and deployment workflows.</li>
+      </ul>
+    </div>
+    <div class="job">
+      <div class="jr">Web Developer Intern</div>
+      <div class="jc">Lirion Technologies</div>
+      <div class="jd">May 2025 &mdash; Jun 2025</div>
+      <ul class="job-bullets">
+        <li>Developed immersive 3D web experiences using Next.js and Tailwind CSS.</li>
+        <li>Optimized frontend performance and responsive design across multiple devices.</li>
+      </ul>
+    </div>
+    <div class="job">
+      <div class="jr">Full Stack Developer Intern</div>
+      <div class="jc">CodeWebX Technologies</div>
+      <div class="jd">Jan 2025 &mdash; Mar 2025</div>
+      <ul class="job-bullets">
+        <li>Built full-stack MERN applications with scalable backend architecture and REST APIs.</li>
+        <li>Participated in feature development, testing, debugging, and deployment processes.</li>
+      </ul>
+    </div>
+    <div class="job">
+      <div class="jr">AI &amp; XR Intern</div>
+      <div class="jc">Flaunch</div>
+      <div class="jd">Oct 2024 &mdash; Dec 2024</div>
+      <ul class="job-bullets">
+        <li>Integrated AI-powered computer vision models into XR applications.</li>
+        <li>Developed intelligent real-time pipelines using Python and machine learning frameworks.</li>
+      </ul>
+    </div>
+    <div class="job">
+      <div class="jr">Web Development Intern</div>
+      <div class="jc">Tech Elecon Pvt Ltd</div>
+      <div class="jd">Jun 2024 &mdash; Aug 2024</div>
+      <ul class="job-bullets">
+        <li>Built REST APIs using Node.js and Express.js, improving backend efficiency.</li>
+        <li>Developed MongoDB-backed applications following MVC architecture principles.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- Projects -->
+<div class="sec-wrap">
+<section id="projects">
+  <p class="lbl">04 / Projects</p>
+  <h2 class="ttl">Key Projects</h2>
+  <div class="pgrid">
+    <div class="pc">
+      <a href="https://codetrust.vercel.app/" target="_blank" rel="noopener" class="pn-link"><span class="pn">CodeTrust</span><span class="p-ext">&#x2197; Live Demo</span></a>
+      <div class="ps">AI Hallucination &amp; Vulnerability Detector</div>
+      <p class="pd">Developed an AI-powered platform to detect hallucinations and security vulnerabilities in AI-generated code. Improved code reliability through automated validation and risk analysis mechanisms.</p>
+      <div class="ptags"><span class="ptag">Python</span><span class="ptag">AI/ML</span><span class="ptag">FastAPI</span><span class="ptag">React</span></div>
+    </div>
+    <div class="pc">
+      <a href="https://format-hub.onrender.com/" target="_blank" rel="noopener" class="pn-link"><span class="pn">Format Hub</span><span class="p-ext">&#x2197; Live Demo</span></a>
+      <div class="ps">CSV File Conversion Platform</div>
+      <p class="pd">Built a full-stack file conversion platform supporting CSV to Excel, PDF, SQL, and SQLite transformations. Implemented file processing, validation, merge, and split functionalities.</p>
+      <div class="ptags"><span class="ptag">Node.js</span><span class="ptag">React</span><span class="ptag">Express</span><span class="ptag">MongoDB</span></div>
+    </div>
+    <div class="pc">
+      <a href="https://room-mate-match-izrf.vercel.app/" target="_blank" rel="noopener" class="pn-link"><span class="pn">AI Powered Roommate Matching</span><span class="p-ext">&#x2197; Live Demo</span></a>
+      <div class="ps">MERN Recommendation System</div>
+      <p class="pd">Developed a MERN-based roommate recommendation system using AI-powered preference matching. Designed intelligent compatibility scoring to improve roommate selection accuracy.</p>
+      <div class="ptags"><span class="ptag">MERN</span><span class="ptag">Machine Learning</span><span class="ptag">REST API</span></div>
+    </div>
+    <div class="pc">
+      <a href="https://sangyanshield.aurocode.in/" target="_blank" rel="noopener" class="pn-link"><span class="pn">Sangyaan Shield</span><span class="p-ext">&#x2197; Live Demo</span></a>
+      <div class="ps">Digital Fraud Resilience &amp; Preemptive Defense</div>
+      <p class="pd">Digital Fraud Resilience &mdash; Preemptive Defense, addressing real-world threats such as fake SEBI registration numbers, deepfakes, misleading financial claims, and fraudulent investment groups.</p>
+      <div class="ptags"><span class="ptag">AI/ML</span><span class="ptag">Cybersecurity</span><span class="ptag">Deepfake Detection</span><span class="ptag">Python</span><span class="ptag">NLP</span></div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- Education -->
+<div class="sec-wrap">
+<section id="edu">
+  <p class="lbl">05 / Education &amp; Certifications</p>
+  <h2 class="ttl">Education</h2>
+  <div class="edugrid">
+    <div class="educard">
+      <div class="edudeg">Bachelor of Technology &ndash; Computer Engineering</div>
+      <div class="eduinst">Madhuben and Bhanubhai Patel Institute of Technology, Anand</div>
+            <p class="edudesc">Expected Graduation: 2026 &bull; Advanced coursework in Algorithms, Data Structures, AI/ML, and Database Systems.</p>
+    </div>
+    <div class="educard">
+      <div class="edudeg">Secondary &amp; Higher Secondary School</div>
+      <div class="eduinst">Gujarat State Board</div>
+      <div class="eduscore">Class X: 94% &bull; Class XII: 84%</div>
+      <p class="edudesc">Strong foundation in Mathematics, Physics, and Computer Science.</p>
+    </div>
+  </div>
+  <div style="height:24px"></div>
+  <p class="lbl">Certifications</p>
+  <div class="chips" style="margin-top:8px">
+    <span class="chip">&bull; Google AutoML Fundamentals</span>
+    <span class="chip">&bull; Machine Learning Foundations</span>
+    <span class="chip">&bull; Full Stack Web Development Certification</span>
+  </div>
+</section>
+</div>
+
+<!-- Achievements -->
+<div class="sec-wrap">
+<section id="wins">
+  <p class="lbl">06 / Recognition</p>
+  <h2 class="ttl">Achievements</h2>
+  <div class="agrid">
+    <div class="ac"><div class="ai">&#x1F3C6;</div><div class="at">Winner &ndash; HackX 2025</div><div class="as">National-Level Hackathon</div></div>
+    <div class="ac"><div class="ai">&#x1F948;</div><div class="at">Finalist &ndash; CVMU Hackathon 3.0</div><div class="as">State-Level Innovation</div></div>
+    <div class="ac"><div class="ai">&#x1F916;</div><div class="at">Finalist &ndash; AIML Hackathon</div><div class="as">Parul University</div></div>
+    <div class="ac"><div class="ai">&#x1F469;&#x200D;&#x1F4BB;</div><div class="at">Finalist &ndash; SheBuilds Hackathon</div><div class="as">Women in Tech</div></div>
+    <div class="ac"><div class="ai">&#x1F4BB;</div><div class="at">6+ Tech Internships</div><div class="as">AI/ML &bull; Full Stack &bull; Web</div></div>
+    <div class="ac"><div class="ai">&#x1F4DC;</div><div class="at">Certified AI Practitioner</div><div class="as">Google AutoML Certified</div></div>
+  </div>
+</section>
+</div>
+
+<!-- Contact -->
+<div class="sec-wrap">
+<section id="contact">
+  <p class="lbl">07 / Connect</p>
+  <h2 class="ttl">Get In Touch</h2>
+  <div class="cgrid">
+    <a class="cl" href="mailto:tripathianjali760@gmail.com"><span class="ci">&#x2709;</span><div><span class="clb">Email</span><span class="cv">tripathianjali760@gmail.com</span></div></a>
+    <a class="cl" href="tel:+918347994864"><span class="ci">&#x1F4F1;</span><div><span class="clb">Phone</span><span class="cv">+91 83479 94864</span></div></a>
+    <a class="cl" href="https://github.com/anjali-0404" target="_blank" rel="noopener"><span class="ci">&#x1F419;</span><div><span class="clb">GitHub</span><span class="cv">github.com/anjali-0404</span></div></a>
+    <a class="cl" href="https://linkedin.com/in/anjali-tripathi" target="_blank" rel="noopener"><span class="ci">&#x1F4BC;</span><div><span class="clb">LinkedIn</span><span class="cv">linkedin.com/in/anjali-tripathi</span></div></a>
+  </div>
+</section>
+</div>
+
+<footer>
+  <span class="fc">&copy; 2026 Anjali Tripathi &bull; All Rights Reserved</span>
+</footer>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+<\/script>
+</body>
+</html>`;
+
+/* ── Setup Flat View fallback ──────────────────────────────────────────────── */
+const flatIframe = $('#flat');
+flatIframe.srcdoc = PORTFOLIO_CONTENT;
+
+function setFlat(on) {
+  document.body.classList.toggle('flat', on);
+  $('#mode').textContent = on ? '⬡ 3D Desk' : '⬡ Flat View';
+}
+$('#mode').onclick = () => setFlat(!document.body.classList.contains('flat'));
+
+/* ── Check WebGL Support ───────────────────────────────────────────────────── */
+function webglOK() {
+  try {
+    const c = document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+  } catch (e) { return false; }
+}
+
+if (!webglOK() || typeof THREE === 'undefined') {
+  setFlat(true);
+  $('#ld').classList.add('done');
+  return;
+}
+
+/* ── Initialize 3D Scene ──────────────────────────────────────────────────── */
+try {
+  init3D();
+} catch (e) {
+  console.error('3D initialization failed, falling back to flat view:', e);
+  setFlat(true);
+  $('#ld').classList.add('done');
+}
+
+function init3D() {
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const SCREEN = { w: 1280, h: 1024 };
+  const MON_POS = V(0, 950, 255);
+  const MON_ROT = -3 * Math.PI / 180;
+
+  /* Renderers */
+  const renderer = new THREE.WebGLRenderer({ canvas: $('#gl'), alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x020810, 0);
+
+  const cssR = new THREE.CSS3DRenderer();
+  $('#css').appendChild(cssR.domElement);
+
+  const scene = new THREE.Scene();
+  const cssScene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x020810, 40000, 90000);
+
+  const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 10, 900000);
+  scene.add(camera);
+
+  function resize() {
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    cssR.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* ── Monitor: CSS3D iframe + Screen Mesh ───────────────────────────────── */
+  const wrap = document.createElement('div');
+  wrap.style.cssText = `width:${SCREEN.w}px;height:${SCREEN.h}px;background:#020810;pointer-events:auto;overflow:hidden;border-radius:4px`;
+
+  const frame = document.createElement('iframe');
+  frame.title = 'AnjaliOS';
+  frame.id = 'computer-screen';
+  frame.style.cssText = `width:${SCREEN.w}px;height:${SCREEN.h}px;border:0;background:#020810;display:block`;
+  frame.srcdoc = PORTFOLIO_CONTENT;
+  wrap.appendChild(frame);
+
+  const css3d = new THREE.CSS3DObject(wrap);
+  css3d.position.copy(MON_POS);
+  css3d.rotation.x = MON_ROT;
+  cssScene.add(css3d);
+
+  /* Transparent hole in WebGL so CSS3D iframe shows through */
+  const hole = new THREE.Mesh(
+    new THREE.PlaneGeometry(SCREEN.w, SCREEN.h),
+    new THREE.MeshBasicMaterial({ color: 0, opacity: 0, transparent: true, blending: THREE.NoBlending, side: THREE.DoubleSide })
+  );
+  hole.position.copy(MON_POS);
+  hole.rotation.x = MON_ROT;
+  scene.add(hole);
+
+  /* ── Procedural Cyber Desk Room ────────────────────────────────────────── */
+  const mat = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: .7, metalness: .1 }, o));
+  const neon = (c) => new THREE.MeshBasicMaterial({ color: c });
+  function box(w, h, d, m, x, y, z, parent = scene) {
+    const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+    o.position.set(x, y, z);
+    parent.add(o);
+    return o;
+  }
+  function cyl(rt, rb, h, m, x, y, z, parent = scene) {
+    const o = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, 32), m);
+    o.position.set(x, y, z);
+    parent.add(o);
+    return o;
+  }
+
+  /* Lighting */
+  scene.add(new THREE.AmbientLight(0x556688, 0.7));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+  sun.position.set(-5000, 12000, 8000);
+  scene.add(sun);
+  const spill = new THREE.PointLight(0x00f5ff, 1.2, 10000);
+  spill.position.set(0, 1200, 2200);
+  scene.add(spill);
+  const vio = new THREE.PointLight(0xbf00ff, 0.7, 16000);
+  vio.position.set(4000, 3500, -1500);
+  scene.add(vio);
+
+  /* Floor & Walls */
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(90000, 90000), mat(0x070a12, { roughness: .9 }));
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -3210;
+  scene.add(floor);
+
+  const grid = new THREE.GridHelper(90000, 60, 0x00f5ff, 0x12304a);
+  grid.position.y = -3205;
+  grid.material.opacity = 0.3;
+  grid.material.transparent = true;
+  scene.add(grid);
+
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(90000, 30000), mat(0x0a1020, { roughness: 1 }));
+  wall.position.set(0, 9000, -2700);
+  scene.add(wall);
+
+  box(30000, 50, 30, neon(0x00f5ff), 0, 4200, -2660);
+  box(30000, 50, 30, neon(0xbf00ff), 0, 3700, -2660);
+
+  /* Desk */
+  const wood = mat(0x1a2236, { roughness: .65 });
+  const dark = mat(0x10151f, { roughness: .8 });
+  const body = mat(0x161b29, { roughness: .5, metalness: .3 });
+
+  box(9600, 140, 4200, wood, 0, -70, 300);
+  [[-4600, -1700], [4600, -1700], [-4600, 2200], [4600, 2200]].forEach(p => box(160, 3070, 160, dark, p[0], -1675, p[1]));
+
+  /* Monitor Casing & Bezel */
+  const mon = new THREE.Group();
+  mon.position.copy(MON_POS);
+  mon.rotation.x = MON_ROT;
+  scene.add(mon);
+
+  const T = 150, depth = 120;
+  box(SCREEN.w + 2 * T, T, depth, body, 0, SCREEN.h / 2 + T / 2, depth / 2 - 20, mon);
+  box(SCREEN.w + 2 * T, T, depth, body, 0, -SCREEN.h / 2 - T / 2, depth / 2 - 20, mon);
+  box(T, SCREEN.h, depth, body, -SCREEN.w / 2 - T / 2, 0, depth / 2 - 20, mon);
+  box(T, SCREEN.h, depth, body, SCREEN.w / 2 + T / 2, 0, depth / 2 - 20, mon);
+
+  box(SCREEN.w + 2 * T - 80, SCREEN.h + 2 * T - 80, 800, body, 0, 0, -440, mon);
+  box(800, 700, 400, dark, 0, 0, -1100, mon);
+  box(900, 320, 800, dark, 0, 160, -300);
+  cyl(520, 620, 40, dark, 0, 20, -300);
+  box(60, 20, 10, neon(0x00ff88), SCREEN.w / 2 - 60, -SCREEN.h / 2 - T / 2, depth - 18, mon);
+
+  /* Keyboard & Mouse */
+  box(1900, 50, 600, dark, 0, 25, 1250);
+  box(1800, 10, 520, mat(0x0d1522), 0, 55, 1250);
+  const ms = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), mat(0x1c2438));
+  ms.scale.set(120, 50, 190);
+  ms.position.set(1500, 35, 1250);
+  scene.add(ms);
+  box(900, 8, 800, mat(0x0b1a2c), 1500, 4, 1230);
+
+  /* Coffee mug & Speakers */
+  cyl(130, 110, 230, mat(0xdfe9f5), -1900, 115, 800);
+  [-2200, 2200].forEach(x => {
+    box(520, 920, 520, dark, x, 460, -100);
+    cyl(160, 160, 20, mat(0x050810), x, 460, 165).rotation.x = Math.PI / 2;
+  });
+
+  /* ── Camera Positions & Smooth Interpolation ───────────────────────────── */
+  const mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+  const K = {
+    loading: {
+      position: V(0, 1400, 4400),
+      focalPoint: MON_POS.clone(),
+      update() {}
+    },
+    idle: {
+      position: V(-16000, 10000, 16000),
+      focalPoint: V(0, 500, 0),
+      origin: V(-16000, 10000, 16000),
+      update() {
+        const t = performance.now();
+        this.position.x = Math.sin((t + 19000) * 0.00007) * this.origin.x;
+        this.position.y = Math.sin((t + 1000) * 0.000005) * 3000 + this.origin.y;
+      }
+    },
+    desk: {
+      position: V(0, 1400, 4400),
+      focalPoint: MON_POS.clone(),
+      origin: V(0, 1400, 4400),
+      tf: MON_POS.clone(),
+      tp: V(0, 1400, 4400),
+      update() {
+        const w = window.innerWidth, h = window.innerHeight;
+        const px = (mouse.x - w / 2) / w;
+        const py = (mouse.y - h / 2) / h;
+        this.tp.x += (this.origin.x + px * 300 - this.tp.x) * 0.04;
+        this.tp.y += (this.origin.y - py * 150 - this.tp.y) * 0.04;
+        this.focalPoint.copy(MON_POS);
+        this.position.copy(this.tp);
+      }
+    },
+    monitor: {
+      position: V(0, 950 + 1500 * Math.sin(MON_ROT), 255 + 1500 * Math.cos(MON_ROT)),
+      focalPoint: MON_POS.clone(),
+      update() {
+        const W = window.innerWidth, H = window.innerHeight;
+        const aspect = W / H;
+        const halfFovRad = (35 / 2) * Math.PI / 180;
+        const tanHalfFov = Math.tan(halfFovRad);
+        const distH = SCREEN.h / (2 * tanHalfFov);
+        const distW = SCREEN.w / (2 * tanHalfFov * aspect);
+        const dist = Math.max(distH, distW) * 1.04;
+        this.position.set(
+          0,
+          MON_POS.y + dist * Math.sin(MON_ROT),
+          MON_POS.z + dist * Math.cos(MON_ROT)
+        );
+        this.focalPoint.copy(MON_POS);
+      }
+    }
+  };
+
+  /* Quintic ease */
+  function easeQuint(t) {
+    return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t;
+  }
+
+  const cam = {
+    cur: 'loading',
+    target: undefined,
+    tw: null,
+    pos: K.loading.position.clone(),
+    foc: K.loading.focalPoint.clone(),
+
+    go(key, dur = 1200, callback) {
+      if (this.cur === key || this.target === key) return;
+      this.target = key;
+      this.cur = undefined;
+      K[key].update();
+      this.tw = {
+        key,
+        t0: performance.now(),
+        dur,
+        p0: this.pos.clone(),
+        f0: this.foc.clone(),
+        cb: callback
+      };
+    },
+
+    update(now) {
+      for (const k in K) K[k].update();
+      if (this.tw) {
+        const w = this.tw;
+        const kf = K[w.key];
+        const t = Math.min((now - w.t0) / w.dur, 1);
+        const e = easeQuint(t);
+        this.pos.lerpVectors(w.p0, kf.position, e);
+        this.foc.lerpVectors(w.f0, kf.focalPoint, e);
+        if (t >= 1) {
+          this.cur = w.key;
+          this.target = undefined;
+          const cb = this.tw.cb;
+          this.tw = null;
+          if (cb) cb();
+        }
+      } else if (this.cur) {
+        this.pos.copy(K[this.cur].position);
+        this.foc.copy(K[this.cur].focalPoint);
+      }
+      camera.position.copy(this.pos);
+      camera.lookAt(this.foc);
+    }
+  };
+
+  /* ── Interaction: Click / Scroll to Zoom ────────────────────────────────── */
+  let inMonitor = false;
+
+  function zoomToMonitor() {
+    if (inMonitor) return;
+    inMonitor = true;
+    document.body.classList.add('in-monitor');
+    cam.go('monitor', 1400);
+  }
+
+  function zoomToDesk() {
+    if (!inMonitor) return;
+    inMonitor = false;
+    document.body.classList.remove('in-monitor');
+    cam.go('desk', 1200);
+  }
+
+  window.addEventListener('mousemove', e => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  /* Click handler: if at desk or idle, clicking zooms directly into monitor */
+  document.addEventListener('pointerdown', e => {
+    if (e.target.closest('#hud, #mode, #exit-btn')) return;
+    if (inMonitor) return; // Never trigger zoom while viewing monitor
+    zoomToMonitor();
+  });
+
+  /* Wheel handler: scroll up zooms into monitor from desk; while in monitor, NEVER hijack scroll */
+  window.addEventListener('wheel', e => {
+    if (inMonitor) return; // Allow natural scrolling inside the iframe through all portfolio sections
+    if (e.deltaY < 0) {
+      zoomToMonitor();
+    }
+  }, { passive: true });
+
+  /* Escape key or Exit button zooms back out to desk */
+  window.addEventListener('keydown', e => {
+    if (e.key === 'Escape') zoomToDesk();
+  });
+  $('#exit-btn').onclick = zoomToDesk;
+  $('#hint').onclick = zoomToMonitor;
+
+  /* PostMessage bridge from iframe inside screen */
+  window.addEventListener('message', e => {
+    if (e.data && e.data.type === 'exit') {
+      zoomToDesk();
+    }
+  });
+
+  /* ── Render Loop ──────────────────────────────────────────────────────── */
+  let raf = 0;
+  function frameLoop(now) {
+    raf = requestAnimationFrame(frameLoop);
+    cam.update(now);
+    renderer.render(scene, camera);
+    cssR.render(cssScene, camera);
+  }
+  requestAnimationFrame(frameLoop);
+
+  /* ── Boot Complete: Land right in front of computer desk ──────────────── */
+  (async () => {
+    await sleep(600);
+    $('#ld').classList.add('done');
+    cam.go('desk', 1800);
+
+    /* Clock */
+    const clk = $('#clk');
+    const tick = () => clk.textContent = '◷ ' + new Date().toLocaleTimeString();
+    tick();
+    setInterval(tick, 1000);
+  })();
+}
+
+})();
+</script>
+</body>
+</html>

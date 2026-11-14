@@ -1,7 +1,6 @@
 const path = require('path')
 const { merge } = require('webpack-merge')
 const commonConfiguration = require('./webpack.common.js')
-const ip = require('ip')
 const portFinderSync = require('portfinder-sync')
 
 const infoColor = (_message) =>
@@ -20,7 +19,7 @@ module.exports = merge(
         },
         devServer:
         {
-            host: 'local-ip',
+            host: 'localhost',
             port: portFinderSync.getPort(8080),
             open: true,
             https: false,
@@ -38,15 +37,12 @@ module.exports = merge(
                 overlay: true,
                 progress: false
             },
-            onAfterSetupMiddleware: function(devServer)
+            setupMiddlewares: function(middlewares, devServer)
             {
                 const port = devServer.options.port
-                const https = devServer.options.https ? 's' : ''
-                const localIp = ip.address()
-                const domain1 = `http${https}://${localIp}:${port}`
-                const domain2 = `http${https}://localhost:${port}`
-                
-                console.log(`Project running at:\n  - ${infoColor(domain1)}\n  - ${infoColor(domain2)}`)
+                const domain = `http://localhost:${port}`
+                console.log(`\nProject running at: ${infoColor(domain)}\n`)
+                return middlewares
             }
         }
     }

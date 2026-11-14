@@ -55,6 +55,7 @@ export default class Application {
         this.loading = new Loading();
         this.time = new Time();
         this.scene = new THREE.Scene();
+        this.scene.fog = new THREE.FogExp2(0x020810, 0.000018);
         this.cssScene = new THREE.Scene();
         this.overlayScene = new THREE.Scene();
         this.resources = new Resources(sources);

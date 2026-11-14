@@ -6,138 +6,158 @@ import Mouse from '../Utils/Mouse';
 import Sizes from '../Utils/Sizes';
 
 export class CameraKeyframeInstance {
-    position: THREE.Vector3;
+    position:   THREE.Vector3;
     focalPoint: THREE.Vector3;
-
-    constructor(keyframe: CameraKeyframe) {
-        this.position = keyframe.position;
-        this.focalPoint = keyframe.focalPoint;
+    constructor(kf: CameraKeyframe) {
+        this.position   = kf.position.clone();
+        this.focalPoint = kf.focalPoint.clone();
     }
-
     update() {}
 }
 
+// ── Monitor center is at world (0, 950, 255) ──────────────────────────────
+export const MON = new THREE.Vector3(0, 950, 255);
+export const MON_TILT_RAD = 3 * THREE.MathUtils.DEG2RAD;
+
 const keys: { [key in CameraKey]: CameraKeyframe } = {
-    idle: {
-        position: new THREE.Vector3(-20000, 12000, 20000),
-        focalPoint: new THREE.Vector3(0, -1000, 0),
-    },
-    monitor: {
-        position: new THREE.Vector3(0, 950, 2000),
-        focalPoint: new THREE.Vector3(0, 950, 0),
-    },
-    desk: {
-        position: new THREE.Vector3(0, 1800, 5500),
-        focalPoint: new THREE.Vector3(0, 500, 0),
-    },
+    // Far-out cinematic intro view
     loading: {
-        position: new THREE.Vector3(-35000, 35000, 35000),
+        position:   new THREE.Vector3(-35000, 35000, 35000),
         focalPoint: new THREE.Vector3(0, -5000, 0),
     },
+
+    // Orbiting idle — floating, wide-angle room view
+    idle: {
+        position:   new THREE.Vector3(-18000, 11000, 18000),
+        focalPoint: new THREE.Vector3(0, 0, 0),
+    },
+
+    // Desk view — in front of monitor, focused on screen
+    desk: {
+        position:   new THREE.Vector3(0, 1500, 4600),
+        focalPoint: MON.clone(),
+    },
+
+    // Full-screen monitor view — camera perpendicular & centered, screen covers 100% of viewport
+    monitor: {
+        position:   new THREE.Vector3(0, 950 + 1150 * Math.sin(MON_TILT_RAD), 255 + 1150 * Math.cos(MON_TILT_RAD)),
+        focalPoint: MON.clone(),
+    },
+
+    // Free-cam orbit start
     orbitControlsStart: {
-        position: new THREE.Vector3(-15000, 10000, 15000),
-        focalPoint: new THREE.Vector3(-100, 350, 0),
+        position:   new THREE.Vector3(-15000, 10000, 15000),
+        focalPoint: new THREE.Vector3(0, 500, 0),
     },
 };
 
-export class MonitorKeyframe extends CameraKeyframeInstance {
-    application: Application;
-    sizes: Sizes;
-    targetPos: THREE.Vector3;
-    origin: THREE.Vector3;
-
-    constructor() {
-        const keyframe = keys.monitor;
-        super(keyframe);
-        this.application = new Application();
-        this.sizes = this.application.sizes;
-        this.origin = new THREE.Vector3().copy(keyframe.position);
-        this.targetPos = new THREE.Vector3().copy(keyframe.position);
-    }
-
-    update() {
-        const aspect = this.sizes.height / this.sizes.width;
-        const additionalZoom = this.sizes.width < 768 ? 0 : 600;
-        this.targetPos.z = this.origin.z + aspect * 1200 - additionalZoom;
-        this.position.copy(this.targetPos);
-    }
-}
-
-export class LoadingKeyframe extends CameraKeyframeInstance {
-    constructor() {
-        const keyframe = keys.loading;
-        super(keyframe);
-    }
-
-    update() {}
-}
-
-export class DeskKeyframe extends CameraKeyframeInstance {
-    origin: THREE.Vector3;
-    application: Application;
-    mouse: Mouse;
-    sizes: Sizes;
-    targetFoc: THREE.Vector3;
-    targetPos: THREE.Vector3;
-
-    constructor() {
-        const keyframe = keys.desk;
-        super(keyframe);
-        this.application = new Application();
-        this.mouse = this.application.mouse;
-        this.sizes = this.application.sizes;
-        this.origin = new THREE.Vector3().copy(keyframe.position);
-        this.targetFoc = new THREE.Vector3().copy(keyframe.focalPoint);
-        this.targetPos = new THREE.Vector3().copy(keyframe.position);
-    }
-
-    update() {
-        this.targetFoc.x +=
-            (this.mouse.x - this.sizes.width / 2 - this.targetFoc.x) * 0.05;
-        this.targetFoc.y +=
-            (-(this.mouse.y - this.sizes.height) - this.targetFoc.y) * 0.05;
-
-        this.targetPos.x +=
-            (this.mouse.x - this.sizes.width / 2 - this.targetPos.x) * 0.025;
-        this.targetPos.y +=
-            (-(this.mouse.y - this.sizes.height * 2) - this.targetPos.y) *
-            0.025;
-
-        const aspect = this.sizes.height / this.sizes.width;
-        this.targetPos.z = this.origin.z + aspect * 3000 - 1800;
-
-        this.focalPoint.copy(this.targetFoc);
-        this.position.copy(this.targetPos);
-    }
-}
-
+// ════════════════════════════════════════════════════════════════════════════
+// Idle — slow sinusoidal float, always faces the desk/monitor
 export class IdleKeyframe extends CameraKeyframeInstance {
-    time: Time;
-    origin: THREE.Vector3;
+    private origin: THREE.Vector3;
+    private time: Time;
+    constructor() {
+        super(keys.idle);
+        this.origin = keys.idle.position.clone();
+        this.time   = new Time();
+    }
+    update() {
+        const t = this.time.elapsed;
+        this.position.x = Math.sin((t + 19000) * 0.00007) * this.origin.x;
+        this.position.y = Math.sin((t +  1000) * 0.000005) * 3000 + this.origin.y;
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Desk — slight mouse-parallax, always focused on the monitor
+export class DeskKeyframe extends CameraKeyframeInstance {
+    private origin: THREE.Vector3;
+    private mouse:  Mouse;
+    private sizes:  Sizes;
+    private tp: THREE.Vector3;
+    private tf: THREE.Vector3;
 
     constructor() {
-        const keyframe = keys.idle;
-        super(keyframe);
-        this.origin = new THREE.Vector3().copy(keyframe.position);
-        this.time = new Time();
+        super(keys.desk);
+        const app    = new Application();
+        this.mouse   = app.mouse;
+        this.sizes   = app.sizes;
+        this.origin  = keys.desk.position.clone();
+        this.tp      = keys.desk.position.clone();
+        this.tf      = MON.clone();
     }
 
     update() {
-        this.position.x =
-            Math.sin((this.time.elapsed + 19000) * 0.00008) * this.origin.x;
-        this.position.y =
-            Math.sin((this.time.elapsed + 1000) * 0.000004) * 4000 +
-            this.origin.y -
-            3000;
-        this.position.z = this.position.z;
+        const { x: mx, y: my } = this.mouse;
+        const { width: W, height: H } = this.sizes;
+
+        // Subtle parallax
+        const px = (mx - W / 2) / W;
+        const py = (my - H / 2) / H;
+
+        this.tp.x += (this.origin.x + px * 350 - this.tp.x) * 0.04;
+        this.tp.y += (this.origin.y - py * 180 - this.tp.y) * 0.04;
+
+        // Aspect-based z so monitor is well framed on any display
+        const aspect = H / W;
+        this.tp.z = this.origin.z + aspect * 1600;
+
+        this.position.copy(this.tp);
+        this.focalPoint.copy(MON);
     }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Monitor — dynamic fit so ONLY the screen is seen, perfectly centered and perpendicular
+export class MonitorKeyframe extends CameraKeyframeInstance {
+    private sizes: Sizes;
+    private tp:    THREE.Vector3;
+
+    constructor() {
+        super(keys.monitor);
+        this.sizes = new Application().sizes;
+        this.tp    = keys.monitor.position.clone();
+    }
+
+    update() {
+        const { width: W, height: H } = this.sizes;
+        const aspect = W / H;
+
+        // Perspective camera FOV is 35 deg
+        const halfFovRad = (35 / 2) * THREE.MathUtils.DEG2RAD;
+        const tanHalfFov = Math.tan(halfFovRad);
+
+        // Screen size is 1280 x 1024
+        const SCREEN_W = 1280;
+        const SCREEN_H = 1024;
+
+        // Distance required so screen fills viewport height
+        const distH = SCREEN_H / (2 * tanHalfFov);
+        // Distance required so screen fills viewport width
+        const distW = SCREEN_W / (2 * tanHalfFov * aspect);
+
+        // Use Math.max with 1.04 multiplier so the camera backs away far enough
+        // to fit the entire screen inside the viewport with a clean 4% border margin.
+        // No edges, navigation bars, or content are ever cut off on any aspect ratio.
+        const dist = Math.max(distH, distW) * 1.04;
+
+        // Normal vector points along (0, sin(3°), cos(3°))
+        this.tp.set(
+            0,
+            MON.y + dist * Math.sin(MON_TILT_RAD),
+            MON.z + dist * Math.cos(MON_TILT_RAD)
+        );
+
+        this.position.copy(this.tp);
+        this.focalPoint.copy(MON);
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+export class LoadingKeyframe extends CameraKeyframeInstance {
+    constructor() { super(keys.loading); }
 }
 
 export class OrbitControlsStart extends CameraKeyframeInstance {
-    constructor() {
-        const keyframe = keys.orbitControlsStart;
-        super(keyframe);
-    }
-
-    update() {}
+    constructor() { super(keys.orbitControlsStart); }
 }

@@ -1,26 +1,21 @@
-h1,
-h2,
-h3,
-h4,
-h5,
-p {
-    /* font-family: ocr-a-std, monospace; */
-    font-family: monospace;
+/* =====================================================
+   ANJALI TRIPATHI PORTFOLIO — UI STYLES
+   Aesthetic: Neon Cyber · Glassmorphism · 3D Depth
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+/* ── Typography ───────────────────────────────────── */
+h1, h2, h3, h4, h5, p {
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
     font-weight: 400;
     font-style: normal;
-    color: white;
-    /* mobile friendly font size */
-    font-size: 16px;
+    color: #c8d6e5;
+    font-size: 14px;
 }
 
-/* if on mobile */
 @media only screen and (max-width: 768px) {
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    p {
+    h1, h2, h3, h4, h5, p {
         font-size: 10px;
     }
 }
@@ -31,155 +26,260 @@ br {
     height: 16px;
 }
 
-.loading::after {
-    display: inline-block;
-    animation: dotty steps(1, end) 1s infinite;
-    content: '';
-}
-
-@keyframes dotty {
-    0% {
-        content: '   ';
-    }
-    25% {
-        content: '. ';
-    }
-    50% {
-        content: '.. ';
-    }
-    75% {
-        content: '...';
-    }
-    100% {
-        content: '   ';
-    }
-}
+/* ── Blinking cursor ──────────────────────────────── */
 .blinking-cursor {
-    background-color: #fff;
+    background-color: #00f5ff;
     width: 0.8em;
-    height: 0.15em;
-    -webkit-animation: 0.65s blink step-end infinite;
-    -moz-animation: 0.65s blink step-end infinite;
-    -ms-animation: 0.65s blink step-end infinite;
-    -o-animation: 0.65s blink step-end infinite;
+    height: 0.14em;
+    box-shadow: 0 0 6px #00f5ff, 0 0 14px rgba(0, 245, 255, 0.5);
     animation: 0.65s blink step-end infinite;
 }
 
 @keyframes blink {
-    from,
-    to {
-        background-color: transparent;
-    }
-    50% {
-        background-color: white;
-    }
+    from, to { background-color: transparent; box-shadow: none; }
+    50%       { background-color: #00f5ff; box-shadow: 0 0 6px #00f5ff; }
 }
 
-@-moz-keyframes blink {
-    from,
-    to {
-        background-color: transparent;
-    }
-    50% {
-        background-color: white;
-    }
+/* ── Loading animation ────────────────────────────── */
+.loading::after {
+    display: inline-block;
+    animation: dotty steps(1, end) 1.2s infinite;
+    content: '';
 }
 
-@-webkit-keyframes blink {
-    from,
-    to {
-        background-color: transparent;
-    }
-    50% {
-        background-color: white;
-    }
+@keyframes dotty {
+    0%   { content: '   '; }
+    25%  { content: '.  '; }
+    50%  { content: '.. '; }
+    75%  { content: '...'; }
+    100% { content: '   '; }
 }
 
-@-ms-keyframes blink {
-    from,
-    to {
-        background-color: transparent;
-    }
-    50% {
-        background-color: white;
-    }
+/* ── BIOS / Loading Screen ────────────────────────── */
+.bios-overlay {
+    position: relative;
 }
 
-@-o-keyframes blink {
-    from,
-    to {
-        background-color: transparent;
-    }
-    50% {
-        background-color: white;
-    }
+.loading-screen-header {
+    padding: 48px 56px 32px 56px;
 }
 
+.loading-screen-body {
+    padding-left: 56px;
+    padding-right: 56px;
+    flex: 1;
+}
+
+.loading-screen-footer {
+    padding: 20px 56px 48px 56px;
+}
+
+/* ── START button ─────────────────────────────────── */
 .bios-start-button {
-    background-color: #000;
-    border: 4px solid #fff;
-    border-width: 4px 3px 4px 3px;
+    background-color: transparent;
+    border: 1px solid rgba(0, 245, 255, 0.5);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bios-start-button::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.15), transparent);
+    transition: left 0.4s ease;
+}
+
+.bios-start-button:hover::before {
+    left: 100%;
+}
+
+.bios-start-button:hover {
+    border-color: #00f5ff;
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.4), 0 0 40px rgba(0, 245, 255, 0.15);
 }
 
 .bios-start-button p {
     box-sizing: border-box;
-    padding: 8px;
+    padding: 10px 32px;
+    color: #00f5ff;
+    letter-spacing: 4px;
+    font-size: 13px;
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+    font-family: 'Share Tech Mono', monospace;
+    text-transform: uppercase;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 
 .bios-start-button:hover p {
-    background-color: #fff;
+    color: #020810;
+    background-color: #00f5ff;
+    text-shadow: none;
     cursor: pointer;
-    color: #000;
 }
 
-.loading-screen-header {
-    padding: 48px;
+/* ── START Popup card ─────────────────────────────── */
+.start-popup-card {
+    animation: popupIn 0.6s cubic-bezier(0.05, 0.7, 0.1, 1) forwards;
 }
 
-.loading-screen-body {
-    padding-left: 48px;
-    padding-right: 48px;
+@keyframes popupIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
-.loading-screen-footer {
-    padding: 48px;
-    padding-bottom: 64px;
+/* ── Glassmorphism HUD cards ──────────────────────── */
+.hud-glass {
+    background: rgba(2, 8, 16, 0.72);
+    border: 1px solid rgba(0, 245, 255, 0.22);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow:
+        0 0 24px rgba(0, 245, 255, 0.08),
+        0 0 48px rgba(191, 0, 255, 0.04),
+        inset 0 0 20px rgba(0, 245, 255, 0.03);
+    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+    margin-bottom: 4px;
 }
 
+.hud-glass:hover {
+    border-color: rgba(0, 245, 255, 0.45);
+    box-shadow:
+        0 0 32px rgba(0, 245, 255, 0.18),
+        0 0 64px rgba(191, 0, 255, 0.08);
+}
+
+/* ── Name card special treatment ─────────────────── */
+.hud-name-card {
+    transform-style: preserve-3d;
+    perspective: 400px;
+    transition: transform 0.3s ease;
+}
+
+.hud-name-card:hover {
+    transform: perspective(400px) rotateX(-2deg) rotateY(1deg) translateZ(2px);
+}
+
+/* ── Skill chips ──────────────────────────────────── */
+.skill-chip {
+    background: rgba(0, 245, 255, 0.07);
+    border: 1px solid rgba(0, 245, 255, 0.28);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: default;
+}
+
+.skill-chip:hover {
+    background: rgba(0, 245, 255, 0.16);
+    border-color: rgba(0, 245, 255, 0.6);
+    box-shadow: 0 0 12px rgba(0, 245, 255, 0.3), 0 0 24px rgba(0, 245, 255, 0.1);
+    transform: translateY(-1px) scale(1.04);
+}
+
+/* ── Achievement badges ───────────────────────────── */
+.achievement-badge {
+    background: rgba(255, 215, 0, 0.06);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.achievement-badge:hover {
+    background: rgba(255, 215, 0, 0.14);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* ── Status dot ───────────────────────────────────── */
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #00ff88;
+    box-shadow: 0 0 6px #00ff88, 0 0 14px rgba(0, 255, 136, 0.5);
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% { box-shadow: 0 0 6px #00ff88, 0 0 14px rgba(0, 255, 136, 0.5); }
+    50%       { box-shadow: 0 0 10px #00ff88, 0 0 24px rgba(0, 255, 136, 0.8), 0 0 36px rgba(0, 255, 136, 0.3); }
+}
+
+/* ── Help prompt glass ────────────────────────────── */
+.help-prompt-glass {
+    transition: box-shadow 0.9s ease !important;
+}
+
+/* ── Icon control containers ──────────────────────── */
+.icon-control-container {
+    height: 26.5px;
+    width: 26.5px;
+    background: rgba(2, 8, 16, 0.72) !important;
+    border: 1px solid rgba(0, 245, 255, 0.22) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.icon-control-container:hover {
+    border-color: rgba(0, 245, 255, 0.5) !important;
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.25);
+}
+
+/* ── Progress glow ────────────────────────────────── */
+.progress-glow {
+    animation: progressGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes progressGlow {
+    from { opacity: 0.4; }
+    to   { opacity: 0.9; }
+}
+
+/* ── Info wrapper positioning ─────────────────────── */
 .info-wrapper {
     top: 64px;
     left: 64px;
 }
 
-/* if on mobile make all loading screen elements have a padding of 16 */
+/* ── Mobile overrides ─────────────────────────────── */
 @media only screen and (max-width: 768px) {
-    .loading-screen-header {
-        padding: 16px;
-    }
-
-    .info-wrapper {
-        top: 16px;
-        left: 16px;
-    }
+    .loading-screen-header { padding: 20px; }
+    .loading-screen-body   { padding-left: 20px; padding-right: 20px; }
+    .loading-screen-footer { padding: 16px 20px 28px; }
+    .info-wrapper          { top: 16px; left: 16px; }
 
     .blinking-cursor {
-        background-color: #fff;
         width: 0.4em;
         height: 0.08em;
-        -webkit-animation: 0.65s blink step-end infinite;
-        -moz-animation: 0.65s blink step-end infinite;
-        -ms-animation: 0.65s blink step-end infinite;
-        -o-animation: 0.65s blink step-end infinite;
-        animation: 0.65s blink step-end infinite;
-    }
-    
-    .loading-screen-body {
-        padding-left: 16px;
-        padding-right: 16px;
     }
 
-    .loading-screen-footer {
-        padding: 16px;
-        padding-bottom: 32px;
+    .icon-control-container {
+        height: 22px !important;
+        width: 22px !important;
     }
+}
+
+/* ── Utility: subtle grid background on BIOS overlay ─ */
+.bios-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+        linear-gradient(rgba(0,245,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 1;
 }

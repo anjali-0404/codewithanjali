@@ -1,3 +1,13 @@
+/**
+ * Camera.ts — Anjali Tripathi Portfolio
+ *
+ * Smooth zoom flow:
+ *   Loading  →(boot)→  Idle  →(scroll↑/click)→  Desk  →(scroll↑/click/hover)→  Monitor
+ *
+ * Smooth exit flow:
+ *   Monitor  →(scroll↓/click Back/Escape)→  Desk  →(scroll↓/Escape)→  Idle
+ */
+
 import * as THREE from 'three';
 import Application from '../Application';
 import Sizes from '../Utils/Sizes';
@@ -19,109 +29,238 @@ import {
 } from './CameraKeyframes';
 
 export enum CameraKey {
-    IDLE = 'idle',
-    MONITOR = 'monitor',
-    LOADING = 'loading',
-    DESK = 'desk',
+    IDLE             = 'idle',
+    MONITOR          = 'monitor',
+    LOADING          = 'loading',
+    DESK             = 'desk',
     ORBIT_CONTROLS_START = 'orbitControlsStart',
 }
+
+const SNAP = () => BezierEasing(0.13, 0.99, 0, 1);
+
 export default class Camera extends EventEmitter {
     application: Application;
-    sizes: Sizes;
-    scene: THREE.Scene;
-    instance: THREE.PerspectiveCamera;
-    renderer: Renderer;
-    resources: Resources;
-    time: Time;
+    sizes:       Sizes;
+    scene:       THREE.Scene;
+    instance:    THREE.PerspectiveCamera;
+    renderer:    Renderer;
+    resources:   Resources;
+    time:        Time;
 
-    position: THREE.Vector3;
+    position:   THREE.Vector3;
     focalPoint: THREE.Vector3;
 
     freeCam: boolean;
     orbitControls: OrbitControls;
 
     currentKeyframe: CameraKey | undefined;
-    targetKeyframe: CameraKey | undefined;
+    targetKeyframe:  CameraKey | undefined;
     keyframes: { [key in CameraKey]: CameraKeyframeInstance };
 
     constructor() {
         super();
         this.application = new Application();
-        this.sizes = this.application.sizes;
-        this.scene = this.application.scene;
-        this.renderer = this.application.renderer;
-        this.resources = this.application.resources;
-        this.time = this.application.time;
+        this.sizes       = this.application.sizes;
+        this.scene       = this.application.scene;
+        this.renderer    = this.application.renderer;
+        this.resources   = this.application.resources;
+        this.time        = this.application.time;
 
-        this.position = new THREE.Vector3(0, 0, 0);
-        this.focalPoint = new THREE.Vector3(0, 0, 0);
-
-        this.freeCam = false;
+        this.position   = new THREE.Vector3();
+        this.focalPoint = new THREE.Vector3();
+        this.freeCam    = false;
 
         this.keyframes = {
-            idle: new IdleKeyframe(),
-            monitor: new MonitorKeyframe(),
-            loading: new LoadingKeyframe(),
-            desk: new DeskKeyframe(),
+            idle:               new IdleKeyframe(),
+            monitor:            new MonitorKeyframe(),
+            loading:            new LoadingKeyframe(),
+            desk:               new DeskKeyframe(),
             orbitControlsStart: new OrbitControlsStart(),
         };
 
-        document.addEventListener('mousedown', (event) => {
-            event.preventDefault();
-            // @ts-ignore
-            if (event.target.id === 'prevent-click') return;
-            // print target and current keyframe
-            if (
-                this.currentKeyframe === CameraKey.IDLE ||
-                this.targetKeyframe === CameraKey.IDLE
-            ) {
-                this.transition(CameraKey.DESK);
-            } else if (
-                this.currentKeyframe === CameraKey.DESK ||
-                this.targetKeyframe === CameraKey.DESK
-            ) {
-                this.transition(CameraKey.IDLE);
-            }
-        });
-
-        this.setPostLoadTransition();
         this.setInstance();
+        this.setPostLoadTransition();
+        this.setScrollHandler();
+        this.setClickHandler();
+        this.setKeyboardHandler();
         this.setMonitorListeners();
         this.setFreeCamListeners();
     }
 
-    transition(
-        key: CameraKey,
-        duration: number = 1000,
-        easing?: any,
-        callback?: () => void
-    ) {
-        if (this.currentKeyframe === key) return;
+    // ── Boot → desk (lands in front of computer so resume is immediately visible) ──
+    setPostLoadTransition() {
+        UIEventBus.on('loadingScreenDone', () => {
+            this.transition(CameraKey.DESK, 2200, TWEEN.Easing.Exponential.Out);
+        });
+    }
 
-        if (this.targetKeyframe) TWEEN.removeAll();
+    // ── Scroll wheel — multi-stage zoom ────────────────────────────────────
+    setScrollHandler() {
+        document.addEventListener('wheel', (e) => {
+            if (this.freeCam) return;
+
+            // While in MONITOR mode, NEVER hijack scroll or trigger zoom-out.
+            // Allow natural scrolling inside the iframe through all portfolio sections.
+            if (this.at(CameraKey.MONITOR)) {
+                return;
+            }
+
+            const up = e.deltaY < 0;
+
+            if (up) {
+                // idle → desk
+                if (this.at(CameraKey.IDLE)) {
+                    this.transition(CameraKey.DESK, 1400, SNAP());
+                } else if (this.at(CameraKey.DESK)) {
+                    // desk → monitor (zoom into screen!)
+                    this.transition(CameraKey.MONITOR, 1500, SNAP());
+                    UIEventBus.dispatch('enterMonitor', {});
+                }
+            } else {
+                // desk → idle (only from desk; never zoom out from monitor on wheel)
+                if (this.at(CameraKey.DESK)) {
+                    this.transition(CameraKey.IDLE, 1600, SNAP());
+                }
+            }
+        }, { passive: true });
+    }
+
+    // ── Click handler — idle → desk → monitor ──────────────────────────────
+    setClickHandler() {
+        document.addEventListener('mousedown', (e) => {
+            const target = e.target as HTMLElement;
+            // Ignore UI buttons, iframes, controls
+            if (target.closest?.('iframe, #prevent-click, button, .mode-btn, a, input')) return;
+            if (target.id === 'prevent-click') return;
+
+            // While in MONITOR mode, do not trigger desk transitions on click
+            if (this.at(CameraKey.MONITOR)) return;
+
+            if (this.at(CameraKey.IDLE)) {
+                this.transition(CameraKey.DESK, 1400, SNAP());
+                return;
+            }
+
+            if (this.at(CameraKey.DESK)) {
+                // Click at desk zooms squarely into the monitor screen!
+                this.transition(CameraKey.MONITOR, 1500, SNAP());
+                UIEventBus.dispatch('enterMonitor', {});
+                return;
+            }
+        });
+    }
+
+    // ── Keyboard ───────────────────────────────────────────────────────────
+    setKeyboardHandler() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (this.at(CameraKey.MONITOR)) {
+                    document.body.classList.remove('in-monitor');
+                    this.transition(CameraKey.DESK, 1000, SNAP());
+                    UIEventBus.dispatch('leftMonitor', {});
+                } else if (this.at(CameraKey.DESK)) {
+                    this.transition(CameraKey.IDLE, 1400, SNAP());
+                }
+            }
+        });
+
+        // Bridge postMessage from inside iframe (e.g. exit button or Escape inside iframe)
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'exit') {
+                if (this.at(CameraKey.MONITOR)) {
+                    document.body.classList.remove('in-monitor');
+                    this.transition(CameraKey.DESK, 1000, SNAP());
+                    UIEventBus.dispatch('leftMonitor', {});
+                }
+            }
+        });
+    }
+
+    // ── Monitor hover / UI bus listeners ───────────────────────────────────
+    setMonitorListeners() {
+        this.on('enterMonitor', () => {
+            document.body.classList.add('in-monitor');
+            if (!this.at(CameraKey.MONITOR)) {
+                this.transition(CameraKey.MONITOR, 1500, SNAP());
+                UIEventBus.dispatch('enterMonitor', {});
+            }
+        });
+        this.on('leftMonitor', () => {
+            document.body.classList.remove('in-monitor');
+            if (this.at(CameraKey.MONITOR)) {
+                this.transition(CameraKey.DESK, 1000, SNAP());
+                UIEventBus.dispatch('leftMonitor', {});
+            }
+        });
+
+        UIEventBus.on('enterMonitor', () => {
+            document.body.classList.add('in-monitor');
+            if (!this.at(CameraKey.MONITOR)) {
+                this.transition(CameraKey.MONITOR, 1500, SNAP());
+            }
+        });
+        UIEventBus.on('leftMonitor', () => {
+            document.body.classList.remove('in-monitor');
+            if (this.at(CameraKey.MONITOR)) {
+                this.transition(CameraKey.DESK, 1000, SNAP());
+            }
+        });
+    }
+
+    // ── Free cam (orbit controls) ──────────────────────────────────────────
+    setFreeCamListeners() {
+        UIEventBus.on('freeCamToggle', (on: boolean) => {
+            if (on) {
+                this.transition(CameraKey.ORBIT_CONTROLS_START, 750, SNAP(), () => {
+                    this.instance.position.copy(this.keyframes.orbitControlsStart.position);
+                    this.orbitControls.update();
+                    this.freeCam = true;
+                });
+                const webgl = document.getElementById('webgl');
+                if (webgl) webgl.style.pointerEvents = 'auto';
+            } else {
+                this.freeCam = false;
+                this.transition(CameraKey.IDLE, 4000, TWEEN.Easing.Exponential.Out);
+                const webgl = document.getElementById('webgl');
+                if (webgl) webgl.style.pointerEvents = 'none';
+            }
+        });
+    }
+
+    // ── Helper: are we at or transitioning to this key? ───────────────────
+    at(key: CameraKey): boolean {
+        return this.currentKeyframe === key || this.targetKeyframe === key;
+    }
+
+    // ── Smooth TWEEN transition between keyframes ──────────────────────────
+    transition(key: CameraKey, duration = 1000, easing?: any, callback?: () => void) {
+        if (this.currentKeyframe === key) return;
+        if (this.targetKeyframe)  TWEEN.removeAll();
 
         this.currentKeyframe = undefined;
-        this.targetKeyframe = key;
+        this.targetKeyframe  = key;
 
-        const keyframe = this.keyframes[key];
+        const kf = this.keyframes[key];
+        // Ensure keyframe has latest responsive math
+        kf.update();
 
-        const posTween = new TWEEN.Tween(this.position)
-            .to(keyframe.position, duration)
+        new TWEEN.Tween(this.position)
+            .to(kf.position, duration)
             .easing(easing || TWEEN.Easing.Quintic.InOut)
             .onComplete(() => {
                 this.currentKeyframe = key;
-                this.targetKeyframe = undefined;
+                this.targetKeyframe  = undefined;
                 if (callback) callback();
-            });
+            })
+            .start();
 
-        const focTween = new TWEEN.Tween(this.focalPoint)
-            .to(keyframe.focalPoint, duration)
-            .easing(easing || TWEEN.Easing.Quintic.InOut);
-
-        posTween.start();
-        focTween.start();
+        new TWEEN.Tween(this.focalPoint)
+            .to(kf.focalPoint, duration)
+            .easing(easing || TWEEN.Easing.Quintic.InOut)
+            .start();
     }
 
+    // ── Init camera instance ───────────────────────────────────────────────
     setInstance() {
         this.instance = new THREE.PerspectiveCamera(
             35,
@@ -130,61 +269,7 @@ export default class Camera extends EventEmitter {
             900000
         );
         this.currentKeyframe = CameraKey.LOADING;
-
         this.scene.add(this.instance);
-    }
-
-    setMonitorListeners() {
-        this.on('enterMonitor', () => {
-            this.transition(
-                CameraKey.MONITOR,
-                2000,
-                BezierEasing(0.13, 0.99, 0, 1)
-            );
-            UIEventBus.dispatch('enterMonitor', {});
-        });
-        this.on('leftMonitor', () => {
-            this.transition(CameraKey.DESK);
-            UIEventBus.dispatch('leftMonitor', {});
-        });
-    }
-
-    setFreeCamListeners() {
-        UIEventBus.on('freeCamToggle', (toggle: boolean) => {
-            // if (toggle === this.freeCam) return;
-            if (toggle) {
-                this.transition(
-                    CameraKey.ORBIT_CONTROLS_START,
-                    750,
-                    BezierEasing(0.13, 0.99, 0, 1),
-                    () => {
-                        this.instance.position.copy(
-                            this.keyframes.orbitControlsStart.position
-                        );
-
-                        this.orbitControls.update();
-                        this.freeCam = true;
-                    }
-                );
-                // @ts-ignore
-                document.getElementById('webgl').style.pointerEvents = 'auto';
-            } else {
-                this.freeCam = false;
-                this.transition(
-                    CameraKey.IDLE,
-                    4000,
-                    TWEEN.Easing.Exponential.Out
-                );
-                // @ts-ignore
-                document.getElementById('webgl').style.pointerEvents = 'none';
-            }
-        });
-    }
-
-    setPostLoadTransition() {
-        UIEventBus.on('loadingScreenDone', () => {
-            this.transition(CameraKey.IDLE, 2500, TWEEN.Easing.Exponential.Out);
-        });
     }
 
     resize() {
@@ -198,20 +283,15 @@ export default class Camera extends EventEmitter {
             this.instance,
             this.renderer.instance.domElement
         );
-
         const { x, y, z } = this.keyframes.orbitControlsStart.focalPoint;
         this.orbitControls.target.set(x, y, z);
-
-        this.orbitControls.enablePan = false;
-        this.orbitControls.enableDamping = true;
-        this.orbitControls.object.position.copy(
-            this.keyframes.orbitControlsStart.position
-        );
-        this.orbitControls.dampingFactor = 0.05;
-        this.orbitControls.maxPolarAngle = Math.PI / 2;
-        this.orbitControls.minDistance = 4000;
-        this.orbitControls.maxDistance = 29000;
-
+        this.orbitControls.enablePan      = false;
+        this.orbitControls.enableDamping  = true;
+        this.orbitControls.dampingFactor  = 0.05;
+        this.orbitControls.maxPolarAngle  = Math.PI / 2;
+        this.orbitControls.minDistance    = 4000;
+        this.orbitControls.maxDistance    = 29000;
+        this.orbitControls.object.position.copy(this.keyframes.orbitControlsStart.position);
         this.orbitControls.update();
     }
 
@@ -225,15 +305,16 @@ export default class Camera extends EventEmitter {
             return;
         }
 
+        // Update live keyframes (parallax, float, aspect correction)
         for (const key in this.keyframes) {
-            const _key = key as CameraKey;
-            this.keyframes[_key].update();
+            this.keyframes[key as CameraKey].update();
         }
 
+        // If settled on a keyframe, track its live position
         if (this.currentKeyframe) {
-            const keyframe = this.keyframes[this.currentKeyframe];
-            this.position.copy(keyframe.position);
-            this.focalPoint.copy(keyframe.focalPoint);
+            const kf = this.keyframes[this.currentKeyframe];
+            this.position.copy(kf.position);
+            this.focalPoint.copy(kf.focalPoint);
         }
 
         this.instance.position.copy(this.position);

@@ -1,34 +1,11 @@
+/**
+ * sources.ts — Anjali Tripathi Portfolio
+ *
+ * Only audio + monitor overlay textures are loaded now.
+ * The 3D scene geometry is built procedurally in GameRoom.ts.
+ */
 const sources: Resource[] = [
-    {
-        name: 'computerSetupModel',
-        type: 'gltfModel',
-        path: 'models/Computer/computer_setup.glb',
-    },
-    {
-        name: 'computerSetupTexture',
-        type: 'texture',
-        path: 'models/Computer/baked_computer.jpg',
-    },
-    {
-        name: 'environmentModel',
-        type: 'gltfModel',
-        path: 'models/World/environment.glb',
-    },
-    {
-        name: 'environmentTexture',
-        type: 'texture',
-        path: 'models/World/baked_environment.jpg',
-    },
-    {
-        name: 'decorModel',
-        type: 'gltfModel',
-        path: 'models/Decor/decor.glb',
-    },
-    {
-        name: 'decorTexture',
-        type: 'texture',
-        path: 'models/Decor/baked_decor_modified.jpg',
-    },
+    // ── Monitor screen overlays ──────────────────────────────────────────
     {
         name: 'monitorSmudgeTexture',
         type: 'texture',
@@ -39,6 +16,8 @@ const sources: Resource[] = [
         type: 'texture',
         path: 'textures/monitor/layers/compressed/shadow-compressed.png',
     },
+
+    // ── Mouse sounds ─────────────────────────────────────────────────────
     {
         name: 'mouseDown',
         type: 'audio',
@@ -49,6 +28,8 @@ const sources: Resource[] = [
         type: 'audio',
         path: 'audio/mouse/mouse_up.mp3',
     },
+
+    // ── Keyboard sounds ───────────────────────────────────────────────────
     {
         name: 'keyboardKeydown1',
         type: 'audio',
@@ -79,6 +60,8 @@ const sources: Resource[] = [
         type: 'audio',
         path: 'audio/keyboard/key_6.mp3',
     },
+
+    // ── Startup / atmosphere ─────────────────────────────────────────────
     {
         name: 'startup',
         type: 'audio',

@@ -1,0 +1,9 @@
+{
+    "extends": "./src/tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "lib": ["ES2017", "DOM"],
+        "types": ["stats.js"]
+    },
+    "include": ["src/**/*"]
+}

@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "target": "ES6",
+        "lib": ["ES2017", "DOM"],
         "moduleResolution": "node",
         "strict": true,
         "paths": {
@@ -9,6 +10,7 @@
         "strictPropertyInitialization": false,
         "allowSyntheticDefaultImports": true,
         "jsx": "react",
+        "types": ["stats.js"]
     },
     
     "include": ["Application/*", "./*"],

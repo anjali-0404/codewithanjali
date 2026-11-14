@@ -144,13 +144,11 @@ const indicatorVars = {
 
 const styles: StyleSheetCSS = {
     container: {
-        background: 'black',
-        // padding: 4,
+        background: 'rgba(2, 8, 16, 0.72)',
         paddingLeft: 8,
         paddingRight: 8,
         textAlign: 'center',
         display: 'flex',
-        // position: 'absolute',
         boxSizing: 'border-box',
         justifyContent: 'center',
         alignItems: 'center',

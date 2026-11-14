@@ -27,7 +27,7 @@ export default class CoffeeSteam {
     setModel() {
         this.model = {};
 
-        this.model.color = '#c9c9c9';
+        this.model.color = '#00f5ff';
 
         // Material
         this.model.material = new THREE.ShaderMaterial({
@@ -44,11 +44,12 @@ export default class CoffeeSteam {
         });
 
         this.model.mesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(280, 700),
+            new THREE.PlaneGeometry(180, 500),
             this.model.material
         );
 
-        this.model.mesh.position.copy(new THREE.Vector3(1670, 200, 900));
+        // Position over a mug on the desk (desk top y≈370, mug height ≈200)
+        this.model.mesh.position.copy(new THREE.Vector3(-1600, 700, 350));
 
         this.scene.add(this.model.mesh);
     }

@@ -5,128 +5,151 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body {
-      background-color: rgb(0, 0, 0);
-      margin: 0;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #020810;
+    }
+
+    /* ── Layer stack (back → front) ───────────────────────────────
+       z-index 1 : #css        — CSS3DRenderer (iframe lives here)
+       z-index 2 : #webgl      — WebGL canvas  (alpha:true, punches hole over monitor)
+       z-index 3 : #overlay    — soft-light shader vignette
+       z-index 4 : #ui-interactive — HUD (name, clock, toggles)
+       z-index 5 : #ui         — loading screen / help prompt
+       z-index 6 : #flat-site  — flat fallback (body.flat only)
+    ────────────────────────────────────────────────────────────── */
+
+    #css {
+      position: fixed; inset: 0;
+      z-index: 1;
+      cursor: pointer;
     }
 
     #webgl {
+      position: fixed; inset: 0;
+      z-index: 2;
+      pointer-events: none;   /* mouse falls through to CSS3D iframe */
+    }
+
+    #overlay {
+      position: fixed; inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    #ui-interactive {
+      position: fixed;
+      top: 0; left: 0;
+      width: 320px;
+      z-index: 4;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    /* In monitor view: raise #css above WebGL and overlay so iframe receives all events */
+    body.in-monitor #css {
+      z-index: 10;
+      pointer-events: auto;
+    }
+    body.in-monitor #overlay {
+      opacity: 0;
+      pointer-events: none;
+    }
+    body.in-monitor #ui-interactive {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-24px);
+    }
+
+    #ui {
+      position: fixed; inset: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       pointer-events: none;
     }
 
     #ui-app {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
-      box-sizing: border-box;
+      pointer-events: none;
     }
 
-    #ui {
-      position: absolute;
-      overflow: hidden;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-sizing: border-box;
+    #ui-app button, #ui-app a, #ui-app input, #ui-app .mode-btn, #prevent-click {
+      pointer-events: auto;
     }
+
+    /* Flat fallback */
+    #flat-site {
+      position: fixed; inset: 0;
+      border: 0;
+      background: #020810;
+      z-index: 10;
+      display: none;
+    }
+    body.flat #flat-site        { display: block; }
+    body.flat #css,
+    body.flat #webgl,
+    body.flat #overlay,
+    body.flat #ui-interactive   { display: none; }
 
     #monitor-videos {
       pointer-events: none;
-      position: 'absolute';
-      opacity: 0;
-      width: 0;
-      height: 0;
-      top: 0;
-      left: 0;
-
+      opacity: 0; width: 0; height: 0;
+      position: fixed; top: 0; left: 0;
     }
 
-    #css {
-      cursor: pointer;
-    }
-
-    #ui-interactive {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 256px;
-    }
-
-    video {
-      position: absolute;
-      top: 0;
-      pointer-events: none;
-    }
+    video { position: absolute; top: 0; pointer-events: none; }
   </style>
 
-  <!-- Primary Meta Tags -->
-  <title>Henry Heffernan - Portfolio 2022</title>
-  <meta name="title" content="Henry Heffernan - Software Engineer">
-  <meta name="description"
-    content="I'm Henry, a Software Engineer based in NY. Rensselaer Polytechnic Institute Graduate with my B.S. in Computer Science, currently looking for a full time role.">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://henryheffernan.com/">
-  <meta property="og:title" content="Henry Heffernan - Software Engineer">
-  <meta property="og:description"
-    content="I'm Henry, a Software Engineer based in NY. Rensselaer Polytechnic Institute Graduate with my B.S. in Computer Science, currently looking for a full time role.">
-
-  <!-- Twitter -->
-
-
-  <meta property="twitter:card" content="summary_large_image">
-  <meta name="twitter:card" content="summary_large_image">
-
-  <meta property="twitter:url" content="https://henryheffernan.com/">
-  <meta name="twitter:url" content="https://henryheffernan.com/">
-
-  <meta property="twitter:title" content="Henry Heffernan - Software Engineer">
-  <meta name="twitter:title" content="Henry Heffernan - Software Engineer">
-
-  <meta property="twitter:description"
-    content="I'm Henry, a Software Engineer based in NY. Rensselaer Polytechnic Institute Graduate with my B.S. in Computer Science, currently looking for a full time role.">
-  <meta name="twitter:description"
-    content="I'm Henry, a Software Engineer based in NY. Rensselaer Polytechnic Institute Graduate with my B.S. in Computer Science, currently looking for a full time role.">
-
-  <meta property="twitter:image" content="https://henryheffernan.com/images/preview-new.jpg">
-  <meta name="twitter:image" content="https://henryheffernan.com/images/preview-new.jpg">
-
-  <!-- Images -->
-  <meta property="og:image" content="https://henryheffernan.com/images/preview-new.jpg">
-  <meta property="og:image:secure" content="https://henryheffernan.com/images/preview-new.jpg">
+  <!-- Meta -->
+  <title>Anjali Tripathi — Full Stack Developer &amp; AI/ML Engineer</title>
+  <meta name="title"       content="Anjali Tripathi — Full Stack Developer &amp; AI/ML Engineer">
+  <meta name="description" content="Full Stack Developer &amp; AI/ML Engineer. HackX 2025 Winner. ">
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://anjali-tripathi.dev/">
+  <meta property="og:title"       content="Anjali Tripathi — Full Stack Developer &amp; AI/ML Engineer">
+  <meta property="og:description" content="Full Stack Developer &amp; AI/ML Engineer. HackX 2025 Winner. ">
 
   <link rel="shortcut icon" href="../static/images/favicon.ico" type="image/x-icon">
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4FJBF6WF60"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-4FJBF6WF60');
-  </script>
 </head>
 
 <body>
+  <!-- Layer 1: CSS3DRenderer output (iframe lives here) -->
   <div id="css"></div>
+
+  <!-- Layer 2: WebGL canvas (punches transparent hole over monitor) -->
   <div id="webgl"></div>
+
+  <!-- Layer 3: soft-light vignette overlay -->
   <div id="overlay"></div>
+
+  <!-- Layer 4: HUD (name, clock, toggles) -->
   <div id="ui-interactive"></div>
+
+  <!-- Layer 5: Loading screen / help prompt -->
   <div id="ui"></div>
+
+  <!-- Flat fallback iframe -->
+  <iframe id="flat-site" title="Anjali Tripathi portfolio — flat view"></iframe>
+
+  <!-- Hidden video textures for monitor CRT effect -->
   <div id="monitor-videos">
-    <video id="video-1" muted loop autoplay width="0" height="0" src="../static/textures/monitor/video/base-static.mp4"
-      style="opacity: 0;"></video>
+    <video id="video-1" muted loop autoplay width="0" height="0"
+      src="../static/textures/monitor/video/base-static.mp4" style="opacity:0;"></video>
     <video id="video-2" muted loop autoplay width="0" height="0"
-      src="../static/textures/monitor/video/static-texture-layer.mp4" style="opacity: 0;"></video>
+      src="../static/textures/monitor/video/static-texture-layer.mp4" style="opacity:0;"></video>
   </div>
 </body>
 
